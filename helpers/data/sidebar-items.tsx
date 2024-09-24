@@ -510,3 +510,21 @@ export const sectionNestedItems: SidebarItem[] = [
     title: "Expenses",
   },
 ];
+
+export const sidebarItems: SidebarItem[] = [
+  {
+    key: "admin/statistics",
+    icon: "solar:diagram-up-linear",
+    title: "Thống kê",
+  },
+  {
+    key: "admin/product",
+    icon: "solar:t-shirt-linear",
+    title: "Sản phẩm",
+  },
+  {
+    key: "admin/order",
+    icon: "solar:clipboard-list-linear",
+    title: "Đơn hàng",
+  },
+];

@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { Search, ShoppingCart, Heart } from "lucide-react";
+import { useRouter } from "next-nprogress-bar";
 
 export default function Header() {
+  const router = useRouter();
+
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
@@ -33,7 +36,10 @@ export default function Header() {
           <button className="text-gray-600 hover:text-gray-800">
             <Search className="h-5 w-5" />
           </button>
-          <button className="relative text-gray-600 hover:text-gray-800">
+          <button
+            className="relative text-gray-600 hover:text-gray-800"
+            onClick={() => router.push("/checkout")}
+          >
             <ShoppingCart className="h-5 w-5" />
             <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-xs text-white">
               1

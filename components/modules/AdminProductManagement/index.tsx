@@ -10,10 +10,6 @@ import {
   TableCell,
   Input,
   Button,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
   Chip,
   User,
   Pagination,
@@ -21,16 +17,18 @@ import {
   SortDescriptor,
   SharedSelection,
   Tooltip,
-  ButtonGroup,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Badge,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next-nprogress-bar";
-import { Icon } from "@iconify/react";
+import { Plus } from "lucide-react";
 
-import { users, statusOptions, fakeUsers } from "@/helpers/data/table";
-import { capitalize } from "@/utils/capitalize";
+import { users, fakeUsers } from "@/helpers/data/table";
 import {
-  ChevronDownIcon,
   DeleteIcon,
   EditIcon,
   EyeIcon,
@@ -40,17 +38,29 @@ import useTableQueries from "@/hooks/useTableQueries";
 import ConfirmationModal from "@/components/core/common/confirmation-modal";
 import Opener from "@/components/core/common/opener";
 import UserProfileModal from "@/components/core/common/user-profile-modal";
+import { Product, PRODUCTS } from "@/helpers/data/adminProducts";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
 type User = (typeof fakeUsers)[0];
 
+// const columns = [
+//   { name: "ID", uid: "id" },
+//   { name: "NAME", uid: "fullname" },
+//   { name: "ROLE", uid: "role" },
+//   { name: "DEPARTMENT", uid: "department" },
+//   { name: "STATUS", uid: "is_active" },
+//   { name: "ACTIONS", uid: "actions" },
+// ];
 const columns = [
   { name: "ID", uid: "id" },
-  { name: "NAME", uid: "fullname" },
-  { name: "ROLE", uid: "role" },
-  { name: "DEPARTMENT", uid: "department" },
-  { name: "STATUS", uid: "is_active" },
+  { name: "SẢN PHẨM", uid: "name" },
+  { name: "GIÁ", uid: "price" },
+  {
+    name: "SỐ MẪU",
+    uid: "numberOfSubProducts",
+  },
+  { name: "Trạng thái", uid: "status" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
@@ -96,7 +106,138 @@ const roles = [
   },
 ];
 
-export default function UserManagement() {
+const CellContent = ({
+  item,
+  columnKey,
+}: {
+  item: any;
+  columnKey: React.Key;
+}) => {
+  const router = useRouter();
+
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
+    new Set(["text"]),
+  );
+
+  const selectedValue = React.useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys],
+  );
+
+  const renderCell = React.useCallback(
+    (user: any, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof User];
+
+      switch (columnKey) {
+        case "id":
+          return <p className="text-bold text-small capitalize">{user.id}</p>;
+        case "name":
+          return (
+            <User
+              avatarProps={{ radius: "lg", src: user.imageUrl }}
+              name={user.name}
+            />
+          );
+        case "price":
+          return (
+            <p className="text-bold text-small capitalize">{user.price}</p>
+          );
+        case "numberOfSubProducts":
+          return (
+            <p className="text-bold text-small capitalize">
+              {user.numberOfSubProducts}
+            </p>
+          );
+        case "status":
+          return (
+            <Dropdown>
+              <DropdownTrigger>
+                {selectedValue === "available" ? (
+                  <Chip className="capitalize" color="success">
+                    Đang bán
+                  </Chip>
+                ) : (
+                  <Chip className="capitalize" color="danger">
+                    Dừng bán
+                  </Chip>
+                )}
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="Single selection example"
+                variant="flat"
+                disallowEmptySelection
+                selectionMode="single"
+                selectedKeys={selectedKeys}
+                onSelectionChange={setSelectedKeys}
+              >
+                <DropdownItem key="available">Đang bán</DropdownItem>
+                <DropdownItem key="unavailable" className="text-danger">
+                  Dừng bán
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center justify-center gap-2">
+              <Opener
+                renderContent={({ close }) => (
+                  <UserProfileModal id="" onClose={close} />
+                )}
+                renderOpener={({ open }) => (
+                  <Tooltip content="Xem 5 mẫu">
+                    <button
+                      className="cursor-pointer text-lg text-default-400 active:opacity-50"
+                      onClick={open}
+                    >
+                      <EyeIcon />
+                    </button>
+                  </Tooltip>
+                )}
+              />
+              <Tooltip content="Chỉnh sửa">
+                <button
+                  className="cursor-pointer text-lg text-default-400 active:opacity-50"
+                  onClick={() => router.push(`/users/${user?.id}/edit`)}
+                >
+                  <EditIcon />
+                </button>
+              </Tooltip>
+              <Opener
+                renderContent={({ close }) => (
+                  <ConfirmationModal
+                    actionText="Xoá sản phẩm"
+                    header="Ban có chắc chắn muốn xoá sản phẩm này?"
+                    message="Sau khi xoá, sản phẩm sẽ không thể khôi phục."
+                    type="danger"
+                    onClose={close}
+                    onConfirm={close}
+                  />
+                )}
+                renderOpener={({ open }) => (
+                  <Tooltip color="danger" content="Xoá">
+                    <button
+                      className="cursor-pointer text-lg text-danger active:opacity-50"
+                      onClick={open}
+                    >
+                      <DeleteIcon />
+                    </button>
+                  </Tooltip>
+                )}
+              />
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [selectedValue],
+  );
+
+  return renderCell(item, columnKey);
+};
+
+export default function AdminProductManagement() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -108,13 +249,18 @@ export default function UserManagement() {
 
   const status = rawStatus !== "all" ? new Set(rawStatus.split(",")) : "all";
 
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set([]),
-  );
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
 
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
+    new Set(["text"]),
+  );
+
+  const selectedValue = React.useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys],
+  );
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "age",
     direction: "ascending",
@@ -164,104 +310,14 @@ export default function UserManagement() {
   }, [page, filteredItems, limit]);
 
   const sortedItems = React.useMemo(() => {
-    return [...items].sort((a: User, b: User) => {
-      const first = a[sortDescriptor.column as keyof User] as number;
-      const second = b[sortDescriptor.column as keyof User] as number;
+    return [...PRODUCTS].sort((a: Product, b: Product) => {
+      const first = a[sortDescriptor.column as keyof Product] as number;
+      const second = b[sortDescriptor.column as keyof Product] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
   }, [sortDescriptor, items]);
-
-  const renderCell = React.useCallback((user: any, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof User];
-
-    switch (columnKey) {
-      case "fullname":
-        return (
-          <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            description={user.email}
-            name={user.fullname}
-          />
-        );
-      case "department":
-        return (
-          <p className="text-bold text-small capitalize">
-            {departments.find((dep) => dep.id === user.department_id)?.name}
-          </p>
-        );
-      case "role":
-        return (
-          <p className="text-bold text-small capitalize">
-            {roles.find((role) => role.id === user.role_id)?.name}
-          </p>
-        );
-      case "is_active":
-        return (
-          <Chip
-            className="capitalize"
-            color={cellValue ? "success" : "danger"}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue ? "Active" : "Inactive"}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center justify-center gap-2">
-            <Opener
-              renderContent={({ close }) => (
-                <UserProfileModal id="" onClose={close} />
-              )}
-              renderOpener={({ open }) => (
-                <Tooltip content="Details">
-                  <button
-                    className="cursor-pointer text-lg text-default-400 active:opacity-50"
-                    onClick={open}
-                  >
-                    <EyeIcon />
-                  </button>
-                </Tooltip>
-              )}
-            />
-            <Tooltip content="Edit user">
-              <button
-                className="cursor-pointer text-lg text-default-400 active:opacity-50"
-                onClick={() => router.push(`/users/${user?.id}/edit`)}
-              >
-                <EditIcon />
-              </button>
-            </Tooltip>
-            <Opener
-              renderContent={({ close }) => (
-                <ConfirmationModal
-                  actionText="Delete"
-                  header="Are you sure you want to delete this user?"
-                  message="This action cannot be undone. This will permanently delete the user from the system."
-                  type="danger"
-                  onClose={close}
-                  onConfirm={close}
-                />
-              )}
-              renderOpener={({ open }) => (
-                <Tooltip color="danger" content="Delete user">
-                  <button
-                    className="cursor-pointer text-lg text-danger active:opacity-50"
-                    onClick={open}
-                  >
-                    <DeleteIcon />
-                  </button>
-                </Tooltip>
-              )}
-            />
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
 
   const handleMultipleSelection = React.useCallback((keys: SharedSelection) => {
     handleFilter({ status: Array.from(keys).join(",") });
@@ -301,13 +357,14 @@ export default function UserManagement() {
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
+            placeholder="Tìm kiếm sản phẩm"
             startContent={<SearchIcon />}
             onClear={() => onClear()}
             onValueChange={onSearchChange}
           />
+
           <div className="flex gap-3">
-            <Dropdown>
+            {/* <Dropdown>
               <DropdownTrigger className="hidden sm:flex">
                 <Button
                   endContent={<ChevronDownIcon className="text-small" />}
@@ -354,23 +411,14 @@ export default function UserManagement() {
                   </DropdownItem>
                 ))}
               </DropdownMenu>
-            </Dropdown>
-            <ButtonGroup>
-              <Button
-                color="primary"
-                // className="px-"
-                // endContent={<PlusIcon />}
-                onClick={() => router.push("/users/create")}
-                // onPress={onOpen}
-              >
-                Add New
-              </Button>
-              <Button
-                className="min-w-fit"
-                color="primary"
-                endContent={<Icon icon="solar:alt-arrow-down-line-duotone" />}
-              />
-            </ButtonGroup>
+            </Dropdown> */}
+            <Button
+              color="primary"
+              startContent={<Plus size={16} />}
+              onClick={() => router.push("/admin/product/create")}
+            >
+              Thêm sản phẩm mới
+            </Button>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -472,7 +520,13 @@ export default function UserManagement() {
           {(item) => (
             <TableRow key={item.id}>
               {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+                <TableCell>
+                  <CellContent
+                    item={item}
+                    columnKey={columnKey}
+                    key={item.id}
+                  />
+                </TableCell>
               )}
             </TableRow>
           )}

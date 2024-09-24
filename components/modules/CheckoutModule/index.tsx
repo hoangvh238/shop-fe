@@ -13,15 +13,10 @@ import {
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import { AnimatePresence, LazyMotion, m, domAnimation } from "framer-motion";
+import { CreditCard, Truck } from "lucide-react";
 
-import {
-  VisaIcon,
-  MasterCardIcon,
-  PayPalIcon,
-} from "@/components/core/common/icons";
 import ShippingForm from "@/components/core/common/shipping-form";
 import OrderSummary from "@/components/core/common/order-summary";
-import PaymentForm from "@/components/core/common/payment-form";
 import PaymentMethodRadio from "@/components/core/common/payment-method-radio";
 import cartItems from "@/helpers/data/cart-items";
 import { cn } from "@/utils/cn";
@@ -111,43 +106,43 @@ export default function CheckoutModule() {
               >
                 <AccordionItem
                   key="select_existing_payment"
-                  title="Select existing payment method"
+                  title="Chọn phương thức thanh toán"
                 >
                   <RadioGroup
-                    aria-label="Select existing payment method"
+                    aria-label="Chọn phương thức thanh toán"
                     classNames={{ wrapper: "gap-3" }}
                     defaultValue="4229"
                   >
                     <PaymentMethodRadio
                       isRecommended
                       classNames={paymentRadioClasses}
-                      description="Expires on 12/2024"
-                      icon={<VisaIcon height={30} width={30} />}
-                      label="Visa ending in 4229"
-                      value="4229"
-                    />
-                    <PaymentMethodRadio
-                      classNames={paymentRadioClasses}
-                      description="Expires on 02/2025"
-                      icon={<MasterCardIcon height={30} width={30} />}
-                      label="MasterCard ending in 8888"
+                      description="Chuyển khoản ngân hàng"
+                      icon={<CreditCard height={30} width={30} />}
+                      label="Thanh toán trước"
                       value="8888"
                     />
                     <PaymentMethodRadio
+                      classNames={paymentRadioClasses}
+                      description="Thanh toán khi nhận hàng"
+                      icon={<Truck height={30} width={30} />}
+                      label="Ship COD"
+                      value="4229"
+                    />
+                    {/* <PaymentMethodRadio
                       classNames={paymentRadioClasses}
                       description="Select this option to pay with PayPal"
                       icon={<PayPalIcon height={30} width={30} />}
                       label="PayPal"
                       value="paypal"
-                    />
+                    /> */}
                   </RadioGroup>
                 </AccordionItem>
-                <AccordionItem
+                {/* <AccordionItem
                   key="add_new_payment"
                   title="Add a new payment method"
                 >
                   <PaymentForm variant="bordered" />
-                </AccordionItem>
+                </AccordionItem> */}
               </Accordion>
             </div>
           </div>

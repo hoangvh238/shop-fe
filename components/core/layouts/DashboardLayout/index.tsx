@@ -3,12 +3,12 @@
 import { useMediaQuery } from "usehooks-ts";
 import { Icon } from "@iconify/react";
 import { Button, ScrollShadow, Spacer, Tooltip } from "@nextui-org/react";
+import Image from "next/image";
 
 import Header from "./Header";
 
 import Sidebar from "@/components/core/common/sidebar";
-import { AcmeIcon } from "@/components/core/common/icons";
-import { sectionNestedItems } from "@/helpers/data/sidebar-items";
+import { sidebarItems } from "@/helpers/data/sidebar-items";
 import { cn } from "@/utils/cn";
 
 function DashboardLayout({ children }: { children: React.ReactElement }) {
@@ -21,7 +21,7 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
           "relative flex h-full w-72 flex-col !border-r-small border-divider p-6 transition-width",
           {
             "w-16 items-center px-2 py-6": isCompact,
-          }
+          },
         )}
       >
         <div
@@ -30,13 +30,20 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
 
             {
               "justify-center gap-0": isCompact,
-            }
+            },
           )}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-            <AcmeIcon className="text-background" />
+          <div className="flex h-8 items-center justify-center rounded-full bg-primary">
+            {/* <AcmeIcon className="text-background" /> */}
+            <Image
+              src="/logo.png"
+              alt=""
+              width={32}
+              height={16}
+              className="h-full w-full"
+            />
           </div>
-          <span
+          {/* <span
             className={cn(
               "text-small font-bold uppercase opacity-100 text-primary",
               {
@@ -45,13 +52,13 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
             )}
           >
             Next Exam
-          </span>
+          </span> */}
         </div>
         <ScrollShadow className="-mr-6 h-full max-h-full py-6 pr-6">
           <Sidebar
             defaultSelectedKey="home"
             isCompact={isCompact}
-            items={sectionNestedItems}
+            items={sidebarItems}
           />
         </ScrollShadow>
         <Spacer y={2} />
@@ -72,7 +79,7 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
                 "justify-start truncate text-default-500 data-[hover=true]:text-foreground",
                 {
                   "justify-center": isCompact,
-                }
+                },
               )}
               isIconOnly={isCompact}
               startContent={
@@ -103,7 +110,7 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
                 "justify-start text-default-500 data-[hover=true]:text-foreground",
                 {
                   "justify-center": isCompact,
-                }
+                },
               )}
               isIconOnly={isCompact}
               startContent={
@@ -135,7 +142,7 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
           <h2 className="text-medium font-medium text-default-700">Overview</h2>
         </header> */}
         <Header />
-        <main className=" w-full overflow-visible p-4">{children}</main>
+        <main className="w-full overflow-visible p-4">{children}</main>
       </div>
     </div>
   );

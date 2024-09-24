@@ -17,6 +17,7 @@ import RatingRadioGroup from "./rating-radio-group";
 import TagGroupRadioItem from "./tag-group-radio-item";
 
 import { cn } from "@/utils/cn";
+import { useRouter } from "next-nprogress-bar";
 
 export type ProductViewItemColor = {
   name: string;
@@ -69,6 +70,8 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
   ) => {
     const [isStarred, setIsStarred] = React.useState(false);
     const [selectedImage, setSelectedImage] = React.useState(images[0]);
+
+    const router = useRouter();
 
     return (
       <div
@@ -242,16 +245,22 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
             >
               Thêm vào giỏ hàng
             </Button>
-            <Button
-              fullWidth
-              className="text-medium font-medium"
-              color="primary"
-              size="lg"
-              startContent={<Icon icon="solar:pen-2-linear" width={24} />}
-              variant="flat"
+            <a
+              href="http://localhost:3001/editor/123"
+              target="_blank"
+              rel="noreferrer"
             >
-              Tự thiết kế
-            </Button>
+              <Button
+                fullWidth
+                className="text-medium font-medium"
+                color="primary"
+                size="lg"
+                startContent={<Icon icon="solar:pen-2-linear" width={24} />}
+                variant="flat"
+              >
+                Tự thiết kế
+              </Button>
+            </a>
             {/* <Button
               isIconOnly
               className="text-default-600"

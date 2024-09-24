@@ -64,7 +64,7 @@ const PaymentMethodRadio = React.forwardRef<
                 color="success"
                 variant="flat"
               >
-                Recommended
+                Khuyến khích
               </Chip>
             )}
           </div>
