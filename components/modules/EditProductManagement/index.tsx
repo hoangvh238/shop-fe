@@ -37,11 +37,8 @@ import useTableQueries from "@/hooks/useTableQueries";
 import ConfirmationModal from "@/components/core/common/confirmation-modal";
 import Opener from "@/components/core/common/opener";
 import UserProfileModal from "@/components/core/common/user-profile-modal";
-import { Product } from "@/helpers/data/adminProducts";
-import {
-  useGetAllProductMutation,
-  useGetAllSubProductQuery,
-} from "@/store/queries/productManagement";
+import { SubProduct } from "@/helpers/data/adminProducts";
+import { useGetAllSubProductQuery } from "@/store/queries/productManagement";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
@@ -57,13 +54,16 @@ type User = (typeof fakeUsers)[0];
 // ];
 const columns = [
   { name: "ID", uid: "id" },
-  { name: "SẢN PHẨM", uid: "name" },
   { name: "GIÁ", uid: "price" },
   {
-    name: "SỐ MẪU",
-    uid: "numberOfSubProducts",
+    name: "MÃ MÀU",
+    uid: "color",
   },
-  { name: "Trạng thái", uid: "status" },
+  {
+    name: "KÍCH CỠ",
+    uid: "size",
+  },
+  { name: "TRẠNG THÁI", uid: "status" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
@@ -112,24 +112,16 @@ const roles = [
 const CellContent = ({
   item,
   columnKey,
+  productID,
 }: {
   item: any;
   columnKey: React.Key;
+  productID: string;
 }) => {
   const router = useRouter();
+
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set(["text"]),
-  );
-
-  const { numberOfSubproduct } = useGetAllSubProductQuery(
-    { id: item.id },
-    {
-      selectFromResult: ({ data }) => {
-        return {
-          numberOfSubproduct: data?.result?.products?.length,
-        };
-      },
-    },
   );
 
   const selectedValue = React.useMemo(
@@ -144,23 +136,21 @@ const CellContent = ({
       switch (columnKey) {
         case "id":
           return <p className="text-bold text-small capitalize">{user.id}</p>;
-        case "name":
-          return (
-            <User
-              avatarProps={{ radius: "lg", src: user.images[0] }}
-              name={user.name}
-            />
-          );
         case "price":
           return (
-            <p className="text-bold text-small capitalize">{user.minPrice}</p>
+            <p className="text-bold text-small capitalize">{user.price}</p>
           );
-        case "numberOfSubProducts":
+        case "color":
           return (
-            <p className="text-bold text-small capitalize">
-              {numberOfSubproduct}
-            </p>
+            <div className="flex items-center">
+              <span
+                className="block size-8 rounded-full"
+                style={{ backgroundColor: user.color }}
+              />
+            </div>
           );
+        case "size":
+          return <p className="text-bold text-small uppercase">{user.sizes}</p>;
         case "status":
           return (
             <Dropdown>
@@ -198,10 +188,10 @@ const CellContent = ({
                   <UserProfileModal id="" onClose={close} />
                 )}
                 renderOpener={({ open }) => (
-                  <Tooltip content={`Xem ${numberOfSubproduct} mẫu`}>
+                  <Tooltip content="Xem 5 mẫu">
                     <button
                       className="cursor-pointer text-lg text-default-400 active:opacity-50"
-                      onClick={() => router.push(`/admin/product/${user?.id}`)}
+                      onClick={open}
                     >
                       <EyeIcon />
                     </button>
@@ -211,7 +201,9 @@ const CellContent = ({
               <Tooltip content="Chỉnh sửa">
                 <button
                   className="cursor-pointer text-lg text-default-400 active:opacity-50"
-                  onClick={() => router.push(`/admin/product/edit/${user?.id}`)}
+                  onClick={() =>
+                    router.push(`/admin/product/${productID}/edit/${user?.id}`)
+                  }
                 >
                   <EditIcon />
                 </button>
@@ -244,17 +236,19 @@ const CellContent = ({
           return cellValue;
       }
     },
-    [selectedValue, numberOfSubproduct],
+    [selectedValue],
   );
 
   return renderCell(item, columnKey);
 };
 
-export default function AdminProductManagement() {
+export default function AdminSubProductManagement({
+  productID,
+}: {
+  productID: string;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const [data, setData] = React.useState({ items: [], total: "" });
 
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 5;
@@ -264,71 +258,18 @@ export default function AdminProductManagement() {
 
   const status = rawStatus !== "all" ? new Set(rawStatus.split(",")) : "all";
 
-  // const { products, isFetching } = useGetAllProductQuery(
-  //   {
-  //     filter: "",
-  //     skip: 0,
-  //     pageIndex: page,
-  //     pageSize: limit,
-  //     sortField: "name",
-  //     asc: true,
-  //   },
-  //   {
-  //     selectFromResult: ({ data, isFetching }: any) => {
-  //       const newData = data?.result?.items?.map((item: ProductItem) => {
-  //         return {
-  //           ...item,
-  //           colors: [
-  //             {
-  //               name: "red",
-  //               hex: "#FF0000",
-  //             },
-  //             {
-  //               name: "blue",
-  //               hex: "#0000ff",
-  //             },
-  //             {
-  //               name: "black",
-  //               hex: "#000000",
-  //             },
-  //           ],
-  //         };
-  //       });
+  const { subProducts } = useGetAllSubProductQuery(
+    { id: productID },
+    {
+      selectFromResult: ({ data }) => {
+        return {
+          subProducts: data?.result?.products ?? [],
+        };
+      },
+    },
+  );
 
-  //       return {
-  //         products: newData ?? [],
-  //         isFetching,
-  //       };
-  //     },
-  //   },
-  // );
-
-  const [getAllProducts] = useGetAllProductMutation();
-
-  const getNewProduct = async () => {
-    const { data } = await getAllProducts({
-      filter: "",
-      skip: (page - 1) * limit,
-      pageIndex: page,
-      pageSize: limit,
-      sortField: "name",
-      asc: true,
-    });
-
-    setData(data?.result);
-  };
-
-  React.useEffect(() => {
-    getNewProduct();
-  }, [page, limit]);
-
-  const products = React.useMemo(() => {
-    return data?.items;
-  }, [data]);
-  const totalPage = React.useMemo(() => data?.total, [data]);
-
-  console.log("products", products);
-  console.log("products", totalPage);
+  console.log('first', subProducts)
 
   const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
@@ -391,14 +332,14 @@ export default function AdminProductManagement() {
   }, [page, filteredItems, limit]);
 
   const sortedItems = React.useMemo(() => {
-    return [...products].sort((a: Product, b: Product) => {
-      const first = a[sortDescriptor.column as keyof Product] as number;
-      const second = b[sortDescriptor.column as keyof Product] as number;
+    return [...subProducts].sort((a: SubProduct, b: SubProduct) => {
+      const first = a[sortDescriptor.column as keyof SubProduct] as number;
+      const second = b[sortDescriptor.column as keyof SubProduct] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
-  }, [sortDescriptor, items, products]);
+  }, [sortDescriptor, items, subProducts]);
 
   const handleMultipleSelection = React.useCallback((keys: SharedSelection) => {
     handleFilter({ status: Array.from(keys).join(",") });
@@ -496,9 +437,9 @@ export default function AdminProductManagement() {
             <Button
               color="primary"
               startContent={<Plus size={16} />}
-              onClick={() => router.push("/admin/product/create")}
+              onClick={() => router.push(`/admin/product/${productID}/create`)}
             >
-              Thêm sản phẩm mới
+              Thêm mẫu mới
             </Button>
           </div>
         </div>
@@ -606,6 +547,7 @@ export default function AdminProductManagement() {
                     key={item.id}
                     columnKey={columnKey}
                     item={item}
+                    productID={productID}
                   />
                 </TableCell>
               )}

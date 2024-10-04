@@ -1,39 +1,43 @@
-import { OrderSummaryItemType } from "@/components/core/common/order-summary-item";
 
-const cartItems: OrderSummaryItemType[] = [
-  {
-    id: "1",
-    name: "Áo thun",
-    href: "#",
-    price: "200.000",
-    color: "black",
-    size: "XL",
-    quantity: 1,
-    imageSrc:
-      "https://media-fmplus.cdn.vccloud.vn/uploads/products/2405ASUK0020601/ec52b393-7912-466b-ac44-2805e7f19693.jpg",
-  },
-  {
-    id: "2",
-    name: "Áo thun",
-    href: "#",
-    price: "200.000",
-    color: "red",
-    size: "XL",
-    quantity: 1,
-    imageSrc:
-      "https://media-fmplus.cdn.vccloud.vn/uploads/products/2405ASUK0020601/ec52b393-7912-466b-ac44-2805e7f19693.jpg",
-  },
-  {
-    id: "3",
-    name: "áo thung",
-    href: "#",
-    price: "200.000",
-    color: "blue",
-    size: "XL",
-    quantity: 2,
-    imageSrc:
-      "https://media-fmplus.cdn.vccloud.vn/uploads/products/2405ASUK0020601/ec52b393-7912-466b-ac44-2805e7f19693.jpg",
-  },
-];
+const cartItems: any = {
+  items: [
+    {
+      quantity: 109,
+      size: "XL",
+      customCanvas: {
+        price: 456,
+        images: [
+          "https://gratisography.com/wp-content/uploads/2024/01/gratisography-cyber-kitty-800x525.jpg",
+        ],
+        name: "Ao rat rat dep 2",
+        id: "95f9da9f-af4e-4a74-82ef-0b97a2857ecb",
+      },
+    },
+    {
+      quantity: 20,
+      size: "SM",
+      customCanvas: {
+        price: 456,
+        images: [
+          "https://gratisography.com/wp-content/uploads/2024/01/gratisography-cyber-kitty-800x525.jpg",
+        ],
+        name: "Ao rat rat dep 2",
+        id: "95f9da9f-af4e-4a74-82ef-0b97a2857ecb",
+      },
+    },
+    {
+      quantity: 30,
+      size: "SM",
+      customCanvas: {
+        price: 123,
+        images: [
+          "https://gratisography.com/wp-content/uploads/2024/01/gratisography-cyber-kitty-800x525.jpg",
+        ],
+        name: "Ao rat rat dep 1",
+        id: "3be59c08-db76-490d-8253-5376061570c2",
+      },
+    },
+  ]
+};
 
 export default cartItems;

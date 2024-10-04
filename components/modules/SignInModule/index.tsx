@@ -3,11 +3,49 @@
 import { Icon } from "@iconify/react";
 import { Button } from "@nextui-org/button";
 import { Checkbox, Divider, Input } from "@nextui-org/react";
+import { signInWithPopup } from "firebase/auth";
+import { useRouter } from "next-nprogress-bar";
 import Link from "next/link";
 import React from "react";
 
+import { auth, provider } from "@/services/config";
+
 function SignInModule() {
   const [isVisible, setIsVisible] = React.useState(false);
+
+
+  const router = useRouter();
+
+  const handleGoogleLogin = async () => {
+    try {
+      const resFirebase: any = await signInWithPopup(
+        auth,
+        provider.providerGoogle,
+      );
+
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 1000);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+  const handleFacebookLogin = async () => {
+    try {
+      const resFirebase: any = await signInWithPopup(
+        auth,
+        provider.providerFacebook,
+      );
+
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 1000);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -25,6 +63,7 @@ function SignInModule() {
           <Button
             startContent={<Icon icon="flat-color-icons:google" width={24} />}
             variant="bordered"
+            onClick={handleGoogleLogin}
           >
             Tiếp tục với Google
           </Button>
@@ -33,6 +72,7 @@ function SignInModule() {
               <Icon className="text-[#0765ff]" icon="fe:facebook" width={24} />
             }
             variant="bordered"
+            onClick={handleFacebookLogin}
           >
             Tiếp tục với Facebook
           </Button>

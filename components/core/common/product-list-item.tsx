@@ -3,31 +3,15 @@
 import React from "react";
 import { Button } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
-
-import RatingRadioGroup from "./rating-radio-group";
-
-import { cn } from "@/utils/cn";
 import Image from "next/image";
 import { useRouter } from "next-nprogress-bar";
+
+import { cn } from "@/utils/cn";
+import { ProductItem } from "@/types/item-type";
 
 export type ProductListItemColor = {
   name: string;
   hex: string;
-};
-
-export type ProductItem = {
-  id: string;
-  name: string;
-  href: string;
-  price: number | string;
-  color: string;
-  size: string;
-  isNew?: boolean;
-  rating?: number;
-  availableColors?: ProductListItemColor[];
-  ratingCount?: number;
-  description?: string;
-  imageSrc: string;
 };
 
 export type ProductListItemProps = Omit<
@@ -42,14 +26,14 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
   (
     {
       name,
-      price,
-      rating,
-      ratingCount,
-      description,
-      imageSrc,
+      images,
+      minPrice,
+      colors,
+      providerName,
       isNew,
+      // rating,
+      // ratingCount,
       isPopular,
-      availableColors,
       removeWrapper,
       className,
       ...props
@@ -57,7 +41,7 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
     ref,
   ) => {
     const [isStarred, setIsStarred] = React.useState(false);
-    const hasColors = availableColors && availableColors?.length > 0;
+    const hasColors = colors && colors?.length > 0;
 
     const router = useRouter();
 
@@ -112,35 +96,51 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
             <h3 className="text-xl font-semibold tracking-tight text-default-800">
               {name}
             </h3>
-            <p className="text-small text-default-500">{description}</p>
+            <p className="text-small text-default-500">{providerName}</p>
           </div>
-          <Image
-            alt={name}
-            className={cn(
-              "h-full w-full object-cover transition-all hover:scale-105",
-              {
-                "flex h-full w-56 items-center": isPopular,
-                // "mb-2": hasColors,
-              },
-            )}
-            height={500}
-            src={imageSrc}
-            width={300}
-            onClick={() => router.push("/product/1")}
-          />
+          <div className="group relative">
+            <Image
+              alt={name}
+              className={cn(
+                "h-full w-full cursor-pointer object-cover opacity-100 transition-all duration-500 hover:scale-105 group-hover:opacity-0",
+                {
+                  "flex h-full w-56 items-center": isPopular,
+                  // "mb-2": hasColors,
+                },
+              )}
+              height={500}
+              src={images[0]}
+              width={300}
+              onClick={() => router.push(`/product/${props?.id}`)}
+            />
+            <Image
+              alt={name}
+              className={cn(
+                "absolute inset-0 h-full w-full cursor-pointer object-cover opacity-0 transition-all duration-500 hover:scale-105 group-hover:opacity-100",
+                {
+                  "flex h-full w-56 items-center": isPopular,
+                  // "mb-2": hasColors,
+                },
+              )}
+              height={500}
+              src={images[1]}
+              width={300}
+              onClick={() => router.push(`/product/${props?.id}`)}
+            />
+          </div>
         </div>
         <div className="flex flex-col gap-3 p-4">
           {hasColors ? (
             <div className="">
               <h4 className="sr-only">Available colors</h4>
               <ul className="mt-auto flex items-center justify-center space-x-3">
-                {availableColors.map((color) => (
+                {colors?.map((color) => (
                   <li
-                    key={color.name}
+                    key={color?.name}
                     className="h-2 w-2 rounded-full border border-default-300 border-opacity-10"
-                    style={{ backgroundColor: color.hex }}
+                    style={{ backgroundColor: color?.hex }}
                   >
-                    <span className="sr-only">{color.name}</span>
+                    <span className="sr-only">{color?.name}</span>
                   </li>
                 ))}
               </ul>
@@ -151,13 +151,15 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
               hidden: isPopular,
             })}
           >
-            <p className="text-medium font-medium text-red-500">{price} VNĐ</p>
+            <p className="text-medium font-medium text-red-500">
+              {minPrice} VNĐ
+            </p>
             <h3 className="text-medium font-medium text-default-700">{name}</h3>
           </div>
-          {description && !isPopular ? (
-            <p className="text-small text-default-500">{description}</p>
+          {providerName && !isPopular ? (
+            <p className="text-small text-default-500">{providerName}</p>
           ) : null}
-          {rating !== undefined ? (
+          {/* {rating !== undefined ? (
             <RatingRadioGroup
               hideStarsText
               isReadOnly
@@ -168,8 +170,8 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
               size="sm"
               value={`${rating}`}
             />
-          ) : null}
-          {/* <div className="flex gap-2">
+          ) : null} */}
+          <div className="flex gap-2">
             {isPopular ? (
               <Button
                 fullWidth
@@ -186,10 +188,11 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
               color="primary"
               radius="lg"
               variant={isPopular ? "flat" : "solid"}
+              onClick={() => router.push(`/product/${props?.id}`)}
             >
-              Thêm vào giỏ hàng
+              Xem chi tiết
             </Button>
-          </div> */}
+          </div>
         </div>
       </div>
     );

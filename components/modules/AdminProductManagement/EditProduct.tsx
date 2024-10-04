@@ -43,7 +43,7 @@ const initialForm = {
   images: [],
 };
 
-function CreateProduct() {
+function EditProduct({idProduct} : {idProduct : string}) {
   const router = useRouter();
   const [form, setForm] = React.useState(initialForm);
   const [inforUpload, setInforUpload] = React.useState<any[]>([]);
@@ -67,7 +67,7 @@ function CreateProduct() {
   const submitForm = () => {
     try {
       const newProduct = {
-        // id: "",
+        id: idProduct,
         name: form.nameProduct,
         descriptions: form.discProduct,
         images: form.images.map((image: { url: string }) => image?.url),
@@ -89,11 +89,9 @@ function CreateProduct() {
         >
           <Icon icon="solar:alt-arrow-left-line-duotone" />
         </button>
-        <h3 className="text-xl font-medium uppercase">Tạo sản phẩm mới</h3>
+        <h3 className="text-xl font-medium uppercase">Sửa sản phẩm</h3>
       </div>
-      <p className="mt-4 opacity-85">
-        Điền thông tin bên dưới để tạo sản phẩm mới
-      </p>
+      <p className="mt-4 opacity-85">Điền thông tin bên dưới để sửa sản phẩm</p>
       <div className="mt-5 grid max-w-[900px] grid-cols-1 gap-5">
         <Input
           isRequired
@@ -146,4 +144,4 @@ function CreateProduct() {
   );
 }
 
-export default CreateProduct;
+export default EditProduct;

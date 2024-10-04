@@ -17,6 +17,15 @@ export type RangeFilter = {
   defaultValue: RangeValue;
 };
 
+export type FilterProduct = {
+  filter: string;
+  skip: number;
+  pageIndex: number;
+  pageSize: number;
+  sortField: string;
+  asc: boolean;
+};
+
 export type Filter = {
   type: FilterTypeEnum;
   title: string;

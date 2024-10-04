@@ -5,6 +5,7 @@ const API_SERVER_SOCKET = process?.env?.NEXT_PUBLIC_SERVER_SOCKET_URL;
 const ASSETS_URL = process.env.NEXT_PUBLIC_ASSETS_URL;
 const SITE_URL = '/';
 
+
 const USER_INFO = '_user_info';
 const ACCESS_TOKEN = '_access_token';
 const REFRESH_TOKEN = '_refresh_token';
@@ -17,10 +18,13 @@ const SUB_ACCOUNT_INFO = '_sub_account_info';
 
 const SCRIPT_JITSI = 'https://meet.jit.si/external_api.js';
 
+const ASSETS_URL_IMAGE = 'https://api.cloudinary.com/v1_1/dmeetnppd/image/upload';
+
 const constants = {
   API_SERVER,
   ASSETS_URL,
   SITE_URL,
+  ASSETS_URL_IMAGE,
   USER_INFO,
   ACCESS_TOKEN,
   REFRESH_TOKEN,

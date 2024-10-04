@@ -2,22 +2,22 @@
 
 import React from "react";
 import {
-  Accordion,
-  AccordionItem,
   Button,
   Image,
+  Input,
   Link,
   RadioGroup,
   ScrollShadow,
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
+import { useRouter } from "next-nprogress-bar";
 
 import ColorRadioItem from "./color-radio-item";
-import RatingRadioGroup from "./rating-radio-group";
 import TagGroupRadioItem from "./tag-group-radio-item";
 
 import { cn } from "@/utils/cn";
-import { useRouter } from "next-nprogress-bar";
+import { useAddCardMutation } from "@/store/queries/cartManagement";
+import { enums } from "@/settings";
 
 export type ProductViewItemColor = {
   name: string;
@@ -48,28 +48,87 @@ export type ProductViewInfoProps = Omit<
   isPopular?: boolean;
   isLoading?: boolean;
   removeWrapper?: boolean;
+  name: string;
+  colors: Array<{
+    name: string;
+    hex: string;
+  }>;
+  items: Array<Item>;
 } & ProductViewItem;
 
+type Item = {
+  images: Array<string>;
+  lensVRUrl: string;
+  price: number;
+  color: string;
+  sizes: string;
+  authorId: string;
+  createdBy: string;
+  updatedBy: string;
+  createdDate: string;
+  updatedDate: string;
+  id: string;
+};
+
 const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
-  (
-    {
-      name,
-      images,
-      price,
-      sizes,
-      details,
-      description,
-      availableColors,
-      rating,
-      ratingCount,
-      isPopular,
-      className,
-      ...props
-    },
-    ref,
-  ) => {
+  ({ name, colors, items, isPopular, className, ...props }, ref) => {
     const [isStarred, setIsStarred] = React.useState(false);
-    const [selectedImage, setSelectedImage] = React.useState(images[0]);
+    const [quatity, setQuantity] = React.useState<string>("1");
+    const [size, setSize] = React.useState("");
+
+    const [addCart] = useAddCardMutation();
+
+    const [selectedImage, setSelectedImage] = React.useState(
+      items[0]?.images[0],
+    );
+
+    const [selectItem, setSelectItem] = React.useState<Item | undefined>(
+      items[0],
+    );
+
+    React.useEffect(() => {
+      setSelectItem(items[0]);
+    }, [items]);
+
+    const handleAddToCart = async () => {
+      try {
+        await addCart({
+          quantity: Number(quatity),
+          customCanvasId: selectItem?.id,
+          size: size,
+        });
+      } catch (err) {
+        console.log('err', err);
+      }
+    };
+    const handleBuy = async () => {
+      try {
+        await addCart({
+          quantity: Number(quatity),
+          customCanvasId: selectItem?.id,
+          size: size,
+        });
+        router.push(`/checkout?itemProduct=${selectItem?.id}&size=${size}`);
+      } catch (err) {
+        console.log('err', err);
+      }
+    };
+
+    const decQuantity = () => {
+      setQuantity(String(Number(quatity) - 1));
+    };
+    const incQuantity = () => {
+      setQuantity(String(Number(quatity) + 1));
+    };
+
+    const valueQuantity: string = React.useMemo(() => {
+      const numberQuantity = Number(quatity);
+
+      if (numberQuantity >= 1 || quatity == "") return quatity;
+      setQuantity("1");
+
+      return "1";
+    }, [quatity]);
 
     const router = useRouter();
 
@@ -114,7 +173,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
             className="-mx-2 -mb-4 mt-4 flex w-full max-w-full gap-4 px-2 pb-4 pt-2"
             orientation="horizontal"
           >
-            {images.map((image, index) => (
+            {selectItem?.images?.map((image, index) => (
               <button
                 key={`${image}-${index}`}
                 className="relative h-24 w-24 flex-none cursor-pointer items-center justify-center rounded-medium ring-offset-background transition-shadow data-[selected=true]:outline-none data-[selected=true]:ring-2 data-[selected=true]:ring-focus data-[selected=true]:ring-offset-2"
@@ -139,34 +198,47 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
           <h2 className="sr-only">Product information</h2>
-          <div className="my-2 flex items-center gap-2">
+          {/* <div className="my-2 flex items-center gap-2">
             <RatingRadioGroup hideStarsText size="sm" value={`${rating}`} />
             <p className="text-small text-default-400">
               {ratingCount} {ratingCount === 1 ? "review" : "reviews"}
             </p>
-          </div>
-          <p className="text-xl font-medium tracking-tight">{price} VNĐ</p>
-          <div className="mt-4">
+          </div> */}
+          <p className="text-xl font-medium tracking-tight">
+            {((selectItem?.price ?? 0) * Number(quatity)).toLocaleString(
+              "vi-VN",
+            )}{" "}
+            VNĐ
+          </p>
+          {/* <div className="mt-4">
             <p className="sr-only">Product description</p>
             <p className="line-clamp-3 text-medium text-default-500">
               {description}
             </p>
-          </div>
+          </div> */}
           <RadioGroup
             aria-label="Color"
             classNames={{
               base: "ml-1 mt-6",
               wrapper: "gap-2",
             }}
-            defaultValue={availableColors?.at(0)?.hex}
+            value={enums.Color[selectItem?.color as keyof typeof enums.Color]}
             orientation="horizontal"
+            onChange={(e) => {
+              const newSelectionItem = items.find(
+                (item: Item) => item?.color === e.target.value,
+              );
+
+              setSize("");
+              setSelectItem(newSelectionItem);
+            }}
           >
-            {availableColors?.map(({ name, hex }) => (
+            {colors?.map(({ name, hex }) => (
               <ColorRadioItem
                 key={name}
                 color={hex}
                 tooltip={name}
-                value={hex}
+                value={name}
               />
             ))}
           </RadioGroup>
@@ -180,15 +252,37 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
             <RadioGroup
               aria-label="Select size"
               className="gap-1"
-              defaultValue="39"
+              value={size}
+              onChange={({ target }) => setSize(target.value)}
               orientation="horizontal"
             >
-              {sizes?.map((size) => (
+              {selectItem?.sizes?.split(",")?.map((size) => (
                 <TagGroupRadioItem key={size} size="lg" value={size}>
                   {size}
                 </TagGroupRadioItem>
               ))}
             </RadioGroup>
+            <div className="mt-8 flex max-w-60 items-center gap-1">
+              <Button className="h-10" size="sm" onClick={decQuantity}>
+                -
+              </Button>
+              <Input
+                isRequired
+                classNames={{
+                  base: "w-20",
+                }}
+                defaultValue="1"
+                labelPlacement="outside"
+                value={valueQuantity}
+                width={40}
+                onChange={({ target }) => {
+                  setQuantity(target.value);
+                }}
+              />
+              <Button className="h-10" size="sm" onClick={incQuantity}>
+                +
+              </Button>
+            </div>
             <Link
               isExternal
               className="my-2 text-default-400"
@@ -202,53 +296,57 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               />
             </Link>
           </div>
-          <Accordion
+          {/* <Accordion
             className="-mx-1 mt-2"
             itemClasses={{
               title: "text-default-400",
               content: "pt-0 pb-6 text-base text-default-500",
             }}
-            items={details}
+            items={name}
             selectionMode="multiple"
           >
-            {details
+            {name
               ? details.map(({ title, items }) => (
-                  <AccordionItem key={title} title={title}>
-                    <ul className="list-inside list-disc">
-                      {items.map((item) => (
-                        <li key={item} className="text-default-500">
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionItem>
-                ))
+                <AccordionItem key={title} title={title}>
+                  <ul className="list-inside list-disc">
+                    {items.map((item) => (
+                      <li key={item} className="text-default-500">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionItem>
+              ))
               : []}
-          </Accordion>
+          </Accordion> */}
           <div className="mt-2 flex flex-col gap-2">
             <Button
               fullWidth
               className="text-medium font-medium"
               color="primary"
+              isDisabled={!size || !quatity}
               size="lg"
               startContent={<Icon icon="solar:cart-large-2-bold" width={24} />}
+              onClick={handleBuy}
             >
               Mua ngay
             </Button>
             <Button
-              variant="bordered"
               fullWidth
               className="text-medium font-medium"
               color="primary"
+              isDisabled={!size || !quatity}
               size="lg"
               startContent={<Icon icon="solar:cart-plus-outline" width={24} />}
+              variant="bordered"
+              onClick={handleAddToCart}
             >
               Thêm vào giỏ hàng
             </Button>
             <a
               href="http://localhost:3001/editor/123"
-              target="_blank"
               rel="noreferrer"
+              target="_blank"
             >
               <Button
                 fullWidth

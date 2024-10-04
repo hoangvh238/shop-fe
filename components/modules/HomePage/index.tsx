@@ -5,11 +5,11 @@ import Trending from "./Trending";
 
 function HomePageModule() {
   return (
-    <div className="flex w-screen flex-col">
+    <div className="flex w-full flex-col">
       <Banner />
       <Trending />
       <AvailableProducts />
-      <Blog />
+      {/* <Blog /> */}
     </div>
   );
 }

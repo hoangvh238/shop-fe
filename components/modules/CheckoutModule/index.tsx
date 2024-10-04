@@ -14,16 +14,74 @@ import {
 import { Icon } from "@iconify/react";
 import { AnimatePresence, LazyMotion, m, domAnimation } from "framer-motion";
 import { CreditCard, Truck } from "lucide-react";
+import { useParams } from "next/navigation";
 
-import ShippingForm from "@/components/core/common/shipping-form";
-import OrderSummary from "@/components/core/common/order-summary";
+import ShippingForm, { FormShippingType } from "@/components/core/common/shipping-form";
+import OrderSummary, {
+  OrderItemType,
+} from "@/components/core/common/order-summary";
 import PaymentMethodRadio from "@/components/core/common/payment-method-radio";
-import cartItems from "@/helpers/data/cart-items";
 import { cn } from "@/utils/cn";
+import { useGetCartQuery } from "@/store/queries/cartManagement";
+import cartItems from "@/helpers/data/cart-items";
+
+export type OrderingType = {
+  inputItem: OrderItemType[];
+  inputOrder: FormShippingType;
+};
+
+function checkFields(form: FormShippingType) {
+  if (
+    !form.email ||
+    !form.firstname ||
+    !form.lastname ||
+    !form.street ||
+    !form.district ||
+    !form.city ||
+    !form.phoneNumber
+  ) {
+    return false;
+  }
+  return true;
+}
 
 export default function CheckoutModule() {
   const [[page, direction], setPage] = React.useState([0, 0]);
+  const [ordering, setOrdering] = React.useState<OrderingType>({
+    inputItem: [],
+    inputOrder: {
+      email: "",
+      firstname: "",
+      lastname: "",
+      street: "",
+      district: "",
+      city: "",
+      phoneNumber: "",
+    },
+  });
 
+  const totalPrice: string = React.useMemo(() => {
+    return ordering.inputItem
+      .reduce(
+        (currentValue, item) => currentValue + item.price * item.quantity,
+        0,
+      )
+      .toLocaleString("vi-VN");
+  }, [ordering.inputItem]);
+
+  // const { cartItems, isFetching } = useGetCartQuery(
+  //   { id: "b3a3cb45-c759-446e-a85d-a3d150bbb8e0" },
+  //   {
+  //     selectFromResult: ({ data, isFetching }) => {
+  //       return {
+  //         cartItems: data?.result ?? [],
+  //         isFetching,
+  //       };
+  //     },
+  //   },
+  // );
+
+  const [paymentMethod, setPaymentMethod] = React.useState("8888");
   const variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 20 : -20,
@@ -41,9 +99,19 @@ export default function CheckoutModule() {
     }),
   };
 
-  const paginate = (newDirection: number) => {
-    if (page + newDirection < 0 || page + newDirection > 2) return;
+  const submitOrderItem = (item: OrderItemType[]) => {
+    setOrdering({ ...ordering, inputItem: item });
+  };
 
+  const submitOrderShipping = (item: any) => {
+    setOrdering({ ...ordering, inputOrder: item });
+  };
+
+  console.log('ordering', ordering)
+
+  const paginate = (newDirection: number) => {
+    // if (page + newDirection > 2 && paymentMethod == "8888");
+    if (page + newDirection < 0 || page + newDirection > 2) return;
     setPage([page + newDirection, newDirection]);
   };
 
@@ -60,6 +128,13 @@ export default function CheckoutModule() {
     }
   }, [page]);
 
+  const isDisabledButtonGoNext = React.useMemo(() => {
+    return (
+      (page === 0 && totalPrice === "0") ||
+      (page === 1 && !checkFields(ordering.inputOrder))
+    );
+  }, [page, ordering]);
+
   const stepTitle = React.useMemo(() => {
     switch (page) {
       case 0:
@@ -72,7 +147,6 @@ export default function CheckoutModule() {
         return "Xem lại đơn hàng của bạn";
     }
   }, [page]);
-
   const stepsContent = React.useMemo(() => {
     const paymentRadioClasses = {
       wrapper: "group-data-[selected=true]:border-foreground",
@@ -82,11 +156,24 @@ export default function CheckoutModule() {
 
     switch (page) {
       case 0:
-        return <OrderSummary hideTitle items={cartItems} />;
+        return (
+          <OrderSummary
+            hideTitle
+            inputItem={ordering.inputItem}
+            items={cartItems?.items}
+            submitOrder={submitOrderItem}
+            totalPrice={totalPrice}
+          />
+        );
       case 1:
         return (
           <div className="mt-4 flex flex-col gap-6">
-            <ShippingForm hideTitle variant="bordered" />
+            <ShippingForm
+              hideTitle
+              inputShipping={ordering.inputOrder}
+              submitOrder={submitOrderShipping}
+              variant="bordered"
+            />
           </div>
         );
       case 2:
@@ -111,7 +198,10 @@ export default function CheckoutModule() {
                   <RadioGroup
                     aria-label="Chọn phương thức thanh toán"
                     classNames={{ wrapper: "gap-3" }}
-                    defaultValue="4229"
+                    defaultValue="8888"
+                    onChange={(e) => {
+                      setPaymentMethod(e.target.value);
+                    }}
                   >
                     <PaymentMethodRadio
                       isRecommended
@@ -150,7 +240,7 @@ export default function CheckoutModule() {
       default:
         return null;
     }
-  }, [page]);
+  }, [page, cartItems, ordering.inputItem]);
 
   return (
     <section className="container mx-auto flex items-start gap-8 px-4 py-20">
@@ -169,16 +259,20 @@ export default function CheckoutModule() {
               Trở lại
             </Button>
           </div>
+
           <div className="flex items-center gap-2">
             <p>
               <span className="text-small font-semibold text-default-700">
-                500.00 VNĐ
+                {totalPrice || 0} VNĐ
               </span>
               <span className="ml-1 text-small text-default-500">
-                (3 sản phẩm)
+                ({ordering?.inputItem?.length || 0})
               </span>
             </p>
-            <Badge content="4" showOutline={false}>
+            <Badge
+              content={ordering?.inputItem?.length || 0}
+              showOutline={false}
+            >
               <Icon icon="solar:cart-check-outline" width={28} />
             </Badge>
           </div>
@@ -205,6 +299,7 @@ export default function CheckoutModule() {
                 <Button
                   fullWidth
                   className="mt-8 bg-foreground text-background"
+                  isDisabled={isDisabledButtonGoNext}
                   size="lg"
                   onPress={() => paginate(1)}
                 >

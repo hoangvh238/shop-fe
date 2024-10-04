@@ -22,14 +22,14 @@ const ProductsGrid = React.forwardRef<HTMLDivElement, ProductGridProps>(
         )}
         {...props}
       >
-        {products.map((product) => (
+        {/* {products.map((product) => (
           <ProductListItem
             key={product.id}
             removeWrapper
             {...product}
             className={cn("w-full snap-start", itemClassName)}
           />
-        ))}
+        ))} */}
       </div>
     );
   },

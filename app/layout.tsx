@@ -40,7 +40,7 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <main className="min-h-screen">{children}</main>
+          <main className="max-h-[1440px]">{children}</main>
         </Providers>
       </body>
     </html>

@@ -18,6 +18,8 @@ import ProductsGrid from "@/components/core/common/products-grid";
 export default function ProductModule() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+
+
   return (
     <div className="max-w-8xl h-full w-full px-2 pb-16 lg:px-24">
       <nav className="my-4 px-2 py-2">

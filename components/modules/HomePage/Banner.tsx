@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Navigation } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Button } from "@nextui-org/button";
 
@@ -14,14 +14,23 @@ const images = ["slide1.jpg", "slide2.jpg", "slide3.jpg", "slide4.jpg"];
 function Banner() {
   return (
     <div className="relative">
-      <Swiper navigation={true} modules={[Navigation]} className="mySwiper">
+      <Swiper
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+        }}
+        className="mySwiper"
+        loop={true}
+        modules={[Autoplay, Navigation]}
+        navigation={true}
+      >
         {images.map((image) => (
           <SwiperSlide key={image}>
             <div className="relative">
               <img
-                src={"/images/banner/" + image}
                 alt={image}
                 className="h-[400px] w-full"
+                src={"/images/banner/" + image}
               />
               <div className="absolute left-[200px] top-[160px] z-20 flex flex-col items-start justify-center gap-4 space-y-6 text-start text-white">
                 <p className="text-sm font-medium md:text-base">Mùa hè 2024</p>
@@ -35,8 +44,8 @@ function Banner() {
                   cách của bạn
                 </p>
                 <Button
-                  size="lg"
                   className="rounded-sm bg-green-500 font-medium text-white hover:bg-green-600"
+                  size="lg"
                 >
                   Mua ngay
                 </Button>

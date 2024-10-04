@@ -30,13 +30,13 @@ function Trending() {
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
-        {productsWithAvailableColors.slice(0, 5).map((product) => (
+        {/* {productsWithAvailableColors.slice(0, 5).map((product) => (
           <ProductListItem
             key={product.id}
             {...product}
             className="snap-start"
           />
-        ))}
+        ))} */}
       </div>
     </div>
   );

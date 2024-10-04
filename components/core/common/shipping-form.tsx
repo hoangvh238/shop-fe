@@ -3,23 +3,45 @@
 import type { InputProps } from "@nextui-org/react";
 
 import React from "react";
-import {
-  Autocomplete,
-  AutocompleteItem,
-  Avatar,
-  Input,
-} from "@nextui-org/react";
+import { Input } from "@nextui-org/react";
 
-import countries from "@/helpers/data/countries";
 import { cn } from "@/utils/cn";
 
 export type ShippingFormProps = React.HTMLAttributes<HTMLDivElement> & {
   variant?: InputProps["variant"];
   hideTitle?: boolean;
+  submitOrder: (item: any) => void;
+  inputShipping: FormShippingType;
+};
+
+export type FormShippingType = {
+  email: string;
+  firstname: string;
+  lastname: string;
+  street: string;
+  district: string;
+  city: string;
+  phoneNumber: string;
 };
 
 const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
-  ({ variant = "flat", className, hideTitle }, ref) => {
+  (
+    { variant = "flat", className, inputShipping, hideTitle, submitOrder },
+    ref,
+  ) => {
+    const [form, setForm] = React.useState(inputShipping);
+
+    const handleForm = (value: string, key: string) => {
+      setForm({
+        ...form,
+        [key]: value,
+      });
+    };
+
+    React.useEffect(() => {
+      submitOrder(form);
+    }, [form]);
+
     return (
       <div ref={ref} className={cn("flex flex-col gap-4", className)}>
         {!hideTitle && (
@@ -29,91 +51,93 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
         )}
         <Input
           isRequired
-          label="Email address"
+          id="email"
+          label="Email"
           labelPlacement="outside"
-          placeholder="Enter your email"
+          placeholder="thangtbv@gmail.com"
           type="email"
+          value={form.email}
           variant={variant}
+          onChange={({ target }) => {
+            handleForm(target.value, target.id);
+          }}
         />
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
           <Input
             isRequired
-            label="First name"
+            id="firstname"
+            label="Họ"
             labelPlacement="outside"
-            placeholder="Enter your first name"
+            placeholder="Trần Văn Bảo"
+            value={form.firstname}
             variant={variant}
+            onChange={({ target }) => {
+              handleForm(target.value, target.id);
+            }}
           />
           <Input
             isRequired
-            label="Last name"
+            id="lastname"
+            label="Tên"
             labelPlacement="outside"
-            placeholder="Enter your last name"
+            placeholder="Thắng"
+            value={form.lastname}
             variant={variant}
-          />
-        </div>
-        <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
-          <Input
-            isRequired
-            label="Address"
-            labelPlacement="outside"
-            placeholder="Lane 1, Street 1"
-            variant={variant}
-          />
-          <Input
-            label="Apt, suite, etc."
-            labelPlacement="outside"
-            placeholder="Apartment, studio, or floor"
-            variant={variant}
+            onChange={({ target }) => {
+              handleForm(target.value, target.id);
+            }}
           />
         </div>
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
           <Input
             isRequired
-            label="City"
+            id="street"
+            label="Đường"
             labelPlacement="outside"
-            placeholder="Enter your city"
+            placeholder="kiệt 2, 89 Mẹ Nhu"
+            value={form.street}
             variant={variant}
+            onChange={({ target }) => {
+              handleForm(target.value, target.id);
+            }}
           />
-          <Autocomplete
-            isRequired
-            defaultItems={countries}
-            label="Country"
+          <Input
+            id="district"
+            label="Huyện, Quận"
             labelPlacement="outside"
-            placeholder="Select country"
-            showScrollIndicators={false}
+            placeholder="Thanh khê"
+            value={form.district}
             variant={variant}
-          >
-            {(item) => (
-              <AutocompleteItem
-                key={item.code}
-                startContent={
-                  <Avatar
-                    alt="Country Flag"
-                    className="h-6 w-6"
-                    src={`https://flagcdn.com/${item.code.toLowerCase()}.svg`}
-                  />
-                }
-                value={item.code}
-              >
-                {item.name}
-              </AutocompleteItem>
-            )}
-          </Autocomplete>
+            onChange={({ target }) => {
+              handleForm(target.value, target.id);
+            }}
+          />
         </div>
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
           <Input
             isRequired
-            label="Postal code"
+            id="city"
+            label="Thành phố"
             labelPlacement="outside"
-            placeholder="12345"
+            placeholder="Đà Nẵng"
+            value={form.city}
             variant={variant}
+            onChange={({ target }) => {
+              handleForm(target.value, target.id);
+            }}
           />
           <Input
             isRequired
-            label="Phone number"
+            id="phoneNumber"
+            label="SDT"
             labelPlacement="outside"
-            placeholder="+1 (555) 555-5555"
+            placeholder="(666) 666 666"
+            startContent={<p>+84</p>}
+            value={form.phoneNumber}
             variant={variant}
+            onChange={({ target }) => {
+              handleForm(target.value, target.id);
+            }}
           />
         </div>
       </div>

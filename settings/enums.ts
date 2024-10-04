@@ -57,6 +57,16 @@ enum UserRole {
   ITSupport = "it_support",
 }
 
+enum Color {
+  White = "#FFFFFF",
+  Red = "#FF0000",
+  Blue = "#0000FF",
+  Green = "#00FF00",
+  Orange = "#FFA500",
+  Black = "#000000",
+  Yellow = "#FFFF00",
+}
+
 const enums = {
   FieldFormItemType,
   CardTypes,
@@ -67,6 +77,7 @@ const enums = {
   PaymentMethod,
   ActiveForgotPasswordStep,
   UserRole,
+  Color,
 };
 
 export default enums;

@@ -8,6 +8,8 @@ const baseQuery = fetchBaseQuery({
   prepareHeaders: (headers) => {
     const accessToken = webStorageClient.getToken();
 
+    headers.set("Content-Type", "application/json");
+
     if (accessToken) {
       headers.set("Authorization", `Bearer ${accessToken}`);
     }

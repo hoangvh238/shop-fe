@@ -8,29 +8,29 @@ export default function Header() {
   const router = useRouter();
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white shadow-lg transition-all duration-500">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
-        <Link href="/" className="text-2xl font-bold text-gray-800">
+        <Link className="text-2xl font-bold text-gray-800" href="/">
           StyledUp
         </Link>
 
         <nav className="hidden space-x-6 md:flex">
-          <Link href="/" className="text-gray-600 hover:text-gray-800">
+          <Link className="text-gray-600 hover:text-gray-800" href="/">
             Trang chủ
           </Link>
-          <Link href="/product" className="text-gray-600 hover:text-gray-800">
+          <Link className="text-gray-600 hover:text-gray-800" href="/product">
             Sản phẩm
           </Link>
-          <Link href="/blog" className="text-gray-600 hover:text-gray-800">
+          <Link className="text-gray-600 hover:text-gray-800" href="/blog">
             Bài viết
           </Link>
-          <Link href="/contact" className="text-gray-600 hover:text-gray-800">
+          <Link className="text-gray-600 hover:text-gray-800" href="/contact">
             Liên hệ
           </Link>
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Link href="/sign-in" className="text-blue-500 hover:text-blue-600">
+          <Link className="text-blue-500 hover:text-blue-600" href="/sign-in">
             Đăng nhập / Đăng ký
           </Link>
           <button className="text-gray-600 hover:text-gray-800">
