@@ -10,6 +10,7 @@ import {
   useCheckbox,
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
+
 import { cn } from "@/utils/cn";
 
 export type TagGroupRadioItemProps = Omit<CheckboxProps, "icon"> & {
@@ -27,7 +28,7 @@ const TagGroupCheckBoxItem = React.forwardRef<
     isFocusVisible,
     getBaseProps,
     getInputProps,
-    getLabelProps,
+    // getLabelProps,
   } = useCheckbox(props);
 
   const groupContext = useCheckboxGroupContext();
@@ -110,7 +111,7 @@ const TagGroupCheckBoxItem = React.forwardRef<
           ) : undefined
         }
         variant="flat"
-        {...getLabelProps()}
+        // {...getLabelProps()}
       >
         {children}
       </Chip>

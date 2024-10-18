@@ -32,10 +32,10 @@ const useTableQueries = () => {
         generateQueryString({
           ...filters,
           page: "1",
-        })
+        }),
       );
     }, 300),
-    []
+    [],
   );
 
   const handleFilterMultiple = useCallback(

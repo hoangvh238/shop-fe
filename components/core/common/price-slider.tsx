@@ -13,6 +13,9 @@ export type PriceSliderAnimation = "opacity" | "height";
 export type PriceSliderProps = Omit<SliderProps, "ref"> & {
   range?: RangeFilter;
   animation?: PriceSliderAnimation;
+  handleFilter: (key: string, value: any) => void;
+  type: string;
+  defaultValue: [number, number];
 };
 
 function clampValue(value: number, min: number, max: number) {
@@ -77,12 +80,10 @@ const PriceSliderPip: React.FC<PriceSliderPipProps> = ({
 };
 
 const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
-  ({ range, animation, className, ...props }, ref) => {
-    const defaultValue = React.useMemo<RangeValue>(
-      () => range?.defaultValue || [0, 1000],
-      [range?.defaultValue],
-    );
-
+  (
+    { range, animation, handleFilter, defaultValue, type, className, ...props },
+    ref,
+  ) => {
     const [value, setValue] = React.useState<RangeValue>(defaultValue);
 
     const rangePercentageValue = React.useMemo(() => {
@@ -117,7 +118,7 @@ const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
 
     const onMinInputValueChange = React.useCallback(
       (inputValue: string) => {
-        const newValue = Number(inputValue);
+        const newValue = Number(inputValue.replaceAll(".", ""));
         const minValue = range?.min ?? defaultValue[0];
 
         if (!isNaN(newValue)) {
@@ -131,7 +132,7 @@ const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
 
     const onMaxInputValueChange = React.useCallback(
       (inputValue: string) => {
-        const newValue = Number(inputValue);
+        const newValue = Number(inputValue.replaceAll(".", ""));
         const maxValue = range?.max ?? defaultValue[1];
 
         if (!isNaN(newValue) && newValue <= maxValue) {
@@ -150,13 +151,14 @@ const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
           <Slider
             {...props}
             ref={ref}
-            formatOptions={{ style: "currency", currency: "USD" }}
+            formatOptions={{ style: "currency", currency: "VND" }}
             maxValue={range?.max}
             minValue={range?.min}
             size="sm"
             step={range?.step}
             value={value}
             onChange={(value) => {
+              handleFilter(type, value);
               setValue(value as RangeValue);
             }}
           />
@@ -164,19 +166,19 @@ const PriceSlider = React.forwardRef<HTMLDivElement, PriceSliderProps>(
         <div className="flex items-center">
           <Input
             aria-label="Min price"
+            endContent={<p className="text-default-400">VND</p>}
             labelPlacement="outside"
-            startContent={<p className="text-default-400">$</p>}
-            type="number"
-            value={`${value[0]}`}
+            type="text"
+            value={`${value[0].toLocaleString("VN-vi")}`}
             onValueChange={onMinInputValueChange}
           />
           <Divider className="mx-2 w-2" />
           <Input
             aria-label="Max price"
+            endContent={<p className="text-default-400">VND</p>}
             labelPlacement="outside"
-            startContent={<p className="text-default-400">$</p>}
-            type="number"
-            value={`${value[1]}`}
+            type="text"
+            value={`${value[1].toLocaleString("VN-vi")}`}
             onValueChange={onMaxInputValueChange}
           />
         </div>

@@ -120,7 +120,7 @@ const notifications: Record<NotificationTabs, Notification[]> = {
 
 export default function Component(props: CardProps) {
   const [activeTab, setActiveTab] = React.useState<NotificationTabs>(
-    NotificationTabs.All
+    NotificationTabs.All,
   );
 
   const activeNotifications = notifications[activeTab];

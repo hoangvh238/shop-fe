@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, Image, Link, Tooltip } from "@nextui-org/react";
-import { Icon } from "@iconify/react";
+import { Image, Link } from "@nextui-org/react";
 
 import { cn } from "@/utils/cn";
 
@@ -23,21 +22,9 @@ export type OrderSummaryItemProps = React.HTMLAttributes<HTMLLIElement> &
 
 const OrderSummaryItem = React.forwardRef<HTMLLIElement, OrderSummaryItemProps>(
   (
-    {
-      children,
-      color,
-      size,
-      quantity,
-      customCanvas,
-      className,
-      deleteCard,
-      ...props
-    },
+    { children, color, size, quantity, customCanvas, className, ...props },
     ref,
   ) => {
-
-
-
     return (
       <li
         ref={ref}
@@ -48,7 +35,7 @@ const OrderSummaryItem = React.forwardRef<HTMLLIElement, OrderSummaryItemProps>(
         {...props}
       >
         <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg">
-          <Image alt={customCanvas?.name} src={customCanvas?.images} />
+          <Image alt={customCanvas?.name} src={customCanvas?.images[0]} />
         </div>
         <div className="flex flex-1 flex-col">
           <h4 className="text-small">
@@ -76,7 +63,7 @@ const OrderSummaryItem = React.forwardRef<HTMLLIElement, OrderSummaryItemProps>(
           </div>
           <div className="mt-2 flex items-center gap-2">
             <span className="text-small font-semibold text-default-700">
-              {customCanvas?.price} VNĐ
+              {customCanvas?.price.toLocaleString("VN-vi")} VNĐ
             </span>
             <span className="text-small text-default-500">x {quantity}</span>
           </div>

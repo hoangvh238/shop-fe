@@ -1,7 +1,8 @@
 "use client";
 
-import { endpointAuth } from "@/helpers/enpoints";
 import { baseApi } from "../base";
+
+import { endpointAuth } from "@/helpers/enpoints";
 
 export const authAPI = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -13,9 +14,42 @@ export const authAPI = baseApi.injectEndpoints({
         flashError: true,
       }),
     }),
+    verifyEmail: build.mutation({
+      query: ({ email }: { email: string }) => ({
+        url: endpointAuth.EMAIL,
+        method: "POST",
+        body: { email },
+        flashError: true,
+      }),
+    }),
     signIn: build.mutation({
-      query: (data: { email: string; password: string; remember: string }) => ({
+      query: (data: {
+        email: string;
+        password: string;
+        isRemember: boolean;
+      }) => ({
         url: endpointAuth.SIGN_IN,
+        method: "POST",
+        body: data,
+        flashError: true,
+      }),
+    }),
+    signUp: build.mutation({
+      query: (data: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        password: string;
+      }) => ({
+        url: endpointAuth.SIGN_UP,
+        method: "POST",
+        body: data,
+        flashError: true,
+      }),
+    }),
+    loginGoogle: build.mutation({
+      query: (data: { accessToken?: string }) => ({
+        url: endpointAuth.LOGIN_GOOGLE,
         method: "POST",
         body: data,
         flashError: true,
@@ -24,4 +58,10 @@ export const authAPI = baseApi.injectEndpoints({
   }),
 });
 
-export const { useSignInMutation, useVerifyTokenMutation } = authAPI;
+export const {
+  useSignInMutation,
+  useVerifyTokenMutation,
+  useSignUpMutation,
+  useVerifyEmailMutation,
+  useLoginGoogleMutation,
+} = authAPI;

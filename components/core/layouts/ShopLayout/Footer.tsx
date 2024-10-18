@@ -18,32 +18,32 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/"
                   className="text-sm text-gray-400 hover:text-white"
+                  href="/"
                 >
                   Trang chủ
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/san-pham"
                   className="text-sm text-gray-400 hover:text-white"
+                  href="/san-pham"
                 >
                   Sản phẩm
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/bai-viet"
                   className="text-sm text-gray-400 hover:text-white"
+                  href="/bai-viet"
                 >
                   Bài viết
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/lien-he"
                   className="text-sm text-gray-400 hover:text-white"
+                  href="/lien-he"
                 >
                   Liên hệ
                 </Link>
@@ -60,13 +60,13 @@ export default function Footer() {
           <div>
             <h4 className="text-md mb-4 font-semibold">Theo dõi chúng tôi</h4>
             <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link className="text-gray-400 hover:text-white" href="#">
                 <Facebook size={20} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link className="text-gray-400 hover:text-white" href="#">
                 <Instagram size={20} />
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-white">
+              <Link className="text-gray-400 hover:text-white" href="#">
                 <Twitter size={20} />
               </Link>
             </div>

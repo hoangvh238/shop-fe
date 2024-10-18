@@ -2,17 +2,19 @@
 
 import React from "react";
 
-import { cn } from "@/utils/cn";
-
 import ProductListItem from "./product-list-item";
-import products from "@/helpers/data/products";
+
+import { cn } from "@/utils/cn";
+import { ProductCustom } from "@/types/item-type";
 
 export type ProductGridProps = React.HTMLAttributes<HTMLDivElement> & {
   itemClassName?: string;
+  products: ProductCustom[];
+  isSuccess: boolean;
 };
 
 const ProductsGrid = React.forwardRef<HTMLDivElement, ProductGridProps>(
-  ({ itemClassName, className, ...props }, ref) => {
+  ({ className, products, isSuccess, ...props }, ref) => {
     return (
       <div
         ref={ref}
@@ -22,14 +24,15 @@ const ProductsGrid = React.forwardRef<HTMLDivElement, ProductGridProps>(
         )}
         {...props}
       >
-        {/* {products.map((product) => (
+        {products?.map((product, index: number) => (
           <ProductListItem
-            key={product.id}
+            key={isSuccess ? product?.id : index}
             removeWrapper
+            isLoading={!isSuccess}
             {...product}
-            className={cn("w-full snap-start", itemClassName)}
+            className={cn("w-full snap-start", className)}
           />
-        ))} */}
+        ))}
       </div>
     );
   },

@@ -1,12 +1,6 @@
 import { nextui } from "@nextui-org/theme";
-
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
-  ],
+import { withUt } from "uploadthing/tw";
+export default withUt({
   theme: {
     extend: {
       fontFamily: {
@@ -41,4 +35,11 @@ module.exports = {
       },
     }),
   ],
-};
+  content: [
+    "./src/**/*.{ts,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+  ],
+});
+/** @type {import('tailwindcss').Config} */

@@ -8,8 +8,11 @@ const prefixApiAuth: string = `/api/core`;
 
 const prefixUser: string = "/api";
 const endpointAuth = {
-  SIGN_IN: `${prefixBase}/auth/login/`,
+  SIGN_IN: `${prefixUser}/Identity/login`,
   VERIFY_TOKEN: `token/verify/`,
+  SIGN_UP: `${prefixUser}/Identity/register`,
+  EMAIL: `${prefixUser}/Identity/verify-mail`,
+  LOGIN_GOOGLE: `${prefixUser}/Identity/login-google`,
 };
 
 const endpointUsersManagement = {
@@ -30,7 +33,7 @@ const endpointEventsManagement = {
 };
 
 const endpointCart = {
-  GET_CART_BY_ID: `${prefixUser}/Cart/{id}`,
+  GET_CART: `${prefixUser}/Cart/`,
   GET_CURRENT_CART: `${prefixUser}/Cart/{id}`,
   ADD_NEW_CART: `${prefixUser}/Cart/{id}`,
   DELETE_CART: `${prefixUser}/Cart/delete/{id}`,
@@ -40,13 +43,36 @@ const endpointCart = {
 const endpointProduct = {
   GET_ALL_PRODUCT: `${prefixUser}/TemplateCanvas/get-basic`,
   GET_PRODUCT: `${prefixUser}/TemplateCanvas/{id}`,
+  GET_SUBPRODUCT: `${prefixUser}/CustomCanvas/{id}`,
   ADD_NEW_PRODUCT: `${prefixUser}/TemplateCanvas`,
+  ADD_NEW_SUBPRODUCT: `${prefixUser}/CustomCanvas`,
   GET_ALL_SUBPRODUCT: `${constants.API_SERVER}${prefixUser}/TemplateCanvas/products/{id}`,
+  DELETE_PRODUCT: `${prefixUser}/CustomCanvas/delete/{id}`,
+  DELETE_SUBPRODUCT: `${prefixUser}/TemplateCanvas/delete/{id}`,
+  FILLTER_PRODUCT: `${prefixUser}/TemplateCanvas/get-all-fillter`,
+};
+
+const endpointProvider = {
+  GET_COLORS: `${prefixUser}/Provider/color-support/{id}`,
+  GET_SIZES: `${prefixUser}/Provider/size-support/{id}`,
+};
+
+const endpointOrder = {
+  GET_ALL_ORDER: `${prefixUser}/Order/get-basic`,
+  GET_DETAIL_ORDER: `${prefixUser}/Order/get-order-by-code`,
+  GET_ORDER: `${prefixUser}/Order/{id}`,
+  ADD_NEW_ORDER: `${prefixUser}/Transaction`,
 };
 
 const endpointScheduleManagement = {};
 
-const endpointOther = {};
+const endpointOther = {
+  CALCULATE_SHIPPING: "https://sandbox.goship.io/api/v2/rates",
+  LOGIN_GOSHIP: "https://sandbox.goship.io/api/v2/login",
+  GET_PROVINCE: "https://sandbox.goship.io/api/v2/cities",
+  GET_DISTRICT: "https://sandbox.goship.io/api/v2/cities/{id}/districts",
+  GET_WARDS: "https://sandbox.goship.io/api/v2/districts/{id}/wards",
+};
 
 export {
   endpointAuth,
@@ -55,5 +81,7 @@ export {
   endpointEventsManagement,
   endpointCart,
   endpointProduct,
+  endpointOrder,
   endpointOther,
+  endpointProvider,
 };

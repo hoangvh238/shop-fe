@@ -36,7 +36,7 @@ function EditUser() {
 
   return (
     <div className="flex flex-col">
-      <div className="w-full flex gap-4">
+      <div className="flex w-full gap-4">
         <button
           className="text-xl text-slate-600 hover:text-foreground"
           onClick={() => router.back()}
@@ -74,16 +74,16 @@ function EditUser() {
           />
         </Badge>
       </div>
-      <div className="grid grid-cols-6 gap-5 mt-5 max-w-[900px]">
+      <div className="mt-5 grid max-w-[900px] grid-cols-6 gap-5">
         <RadioGroup
-          label="Role"
+          isRequired
           classNames={{
             base: "col-span-6",
             label: "text-foreground",
             wrapper: "justify-between",
           }}
+          label="Role"
           orientation="horizontal"
-          isRequired
         >
           <Radio value="buenos-aires">Admin</Radio>
           <Radio value="sydney">Exam Management Team</Radio>
@@ -92,36 +92,36 @@ function EditUser() {
         </RadioGroup>
         <Divider className="col-span-6" />
         <Input
+          isRequired
           className="col-span-3"
-          labelPlacement="outside"
           label="Username"
+          labelPlacement="outside"
           placeholder="Enter Username"
-          isRequired
         />
         <Input
+          isRequired
           className="col-span-3"
-          labelPlacement="outside"
           label="Fullname"
+          labelPlacement="outside"
           placeholder="Enter Fullname"
-          isRequired
         />
         <Input
+          isRequired
           className="col-span-3"
-          labelPlacement="outside"
           label="Email"
+          labelPlacement="outside"
           placeholder="Enter Email"
-          isRequired
         />
         <Input
-          className="col-span-3"
-          labelPlacement="outside"
-          label="Phone Number"
-          placeholder="Enter Phone Number"
           isRequired
+          className="col-span-3"
+          label="Phone Number"
+          labelPlacement="outside"
+          placeholder="Enter Phone Number"
         />
         <Select
-          label="Gender"
           className="col-span-3"
+          label="Gender"
           labelPlacement="outside"
           placeholder="Select gender"
         >
@@ -130,8 +130,8 @@ function EditUser() {
           ))}
         </Select>
         <Select
-          label="Department"
           className="col-span-3"
+          label="Department"
           labelPlacement="outside"
           placeholder="Select Department"
         >
@@ -139,7 +139,7 @@ function EditUser() {
             <SelectItem key={animal.key}>{animal.label}</SelectItem>
           ))}
         </Select>
-        <div className="grid grid-cols-4 col-span-6 gap-5">
+        <div className="col-span-6 grid grid-cols-4 gap-5">
           <Select
             label="Country"
             labelPlacement="outside"
@@ -180,17 +180,17 @@ function EditUser() {
 
         <Input
           className="col-span-3"
-          labelPlacement="outside"
           label="ID Card"
+          labelPlacement="outside"
           placeholder="Enter ID Card"
         />
         <Input
           className="col-span-3"
-          labelPlacement="outside"
           label="Azure ID"
+          labelPlacement="outside"
           placeholder="Enter Azure ID"
         />
-        <Button color="primary" className="col-span-6">
+        <Button className="col-span-6" color="primary">
           Save
         </Button>
       </div>

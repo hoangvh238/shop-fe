@@ -527,4 +527,9 @@ export const sidebarItems: SidebarItem[] = [
     icon: "solar:clipboard-list-linear",
     title: "Đơn hàng",
   },
+  {
+    key: "admin/customCanvas",
+    icon: "uil:edit",
+    title: "Thiết kế",
+  },
 ];

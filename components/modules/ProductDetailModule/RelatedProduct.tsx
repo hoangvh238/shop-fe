@@ -1,26 +1,5 @@
-"use client"
+"use client";
 import React from "react";
-
-import products from "@/helpers/data/products";
-import ProductListItem from "@/components/core/common/product-list-item";
-
-const productsWithAvailableColors = products.map((product) => ({
-  ...product,
-  availableColors: [
-    {
-      name: "Black",
-      hex: "#18181b",
-    },
-    {
-      name: "Red",
-      hex: "#f871a0",
-    },
-    {
-      name: "Yellow",
-      hex: "#f9c97c",
-    },
-  ],
-}));
 
 function RelatedProduct() {
   return (

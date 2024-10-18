@@ -19,7 +19,7 @@ const TagGroupItem = React.forwardRef<HTMLLabelElement, TagGroupItemProps>(
       isSelected,
       isFocusVisible,
       getBaseProps,
-      getLabelProps,
+      // getLabelProps,
       getInputProps,
     } = useCheckbox({
       ...props,
@@ -56,7 +56,7 @@ const TagGroupItem = React.forwardRef<HTMLLabelElement, TagGroupItemProps>(
             ) : undefined
           }
           variant="flat"
-          {...getLabelProps()}
+          // {...getLabelProps()}
         >
           {children}
         </Chip>

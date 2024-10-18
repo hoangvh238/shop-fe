@@ -1,4 +1,5 @@
 import _ from "lodash";
+
 import { getCookie, setCookie } from "cookies-next";
 import Cookies from "js-cookie";
 
@@ -23,6 +24,9 @@ const webStorageClient = {
 
   remove(key: string) {
     setCookie(key, null, { maxAge: 0 });
+  },
+  removeToken() {
+    setCookie(constants.ACCESS_TOKEN, null, { maxAge: 0 });
   },
 
   removeAll() {

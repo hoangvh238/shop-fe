@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, Checkbox, Divider, Input } from "@nextui-org/react";
+import { Checkbox, Divider } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 
 import OrderSummaryItem, { OrderSummaryItemType } from "./order-summary-item";
@@ -10,8 +10,11 @@ export type OrderSummaryProps = React.HTMLAttributes<HTMLDivElement> & {
   hideTitle?: boolean;
   items: OrderSummaryItemType[];
   submitOrder: (inputItem: OrderItemType[]) => void;
-  totalPrice: string;
+  totalPrice: number;
   inputItem: OrderItemType[];
+  setVoucher: (voucher: string) => void;
+  voucher: string;
+  isSuccess: boolean;
 };
 
 export type OrderItemType = {
@@ -22,7 +25,20 @@ export type OrderItemType = {
 };
 
 const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
-  ({ hideTitle, items, totalPrice, inputItem, submitOrder, ...props }, ref) => {
+  (
+    {
+      hideTitle,
+      items,
+      setVoucher,
+      totalPrice,
+      inputItem,
+      isSuccess,
+      voucher,
+      submitOrder,
+      ...props
+    },
+    ref,
+  ) => {
     const [selectList, setSelectList] =
       React.useState<OrderItemType[]>(inputItem);
 
@@ -35,17 +51,20 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
     }, [selectList]);
 
     React.useEffect(() => {
-      if (itemProduct && itemSize) {
-        const item = items.find((e) => e.customCanvas.id === itemProduct);
+      if (itemProduct && itemSize && isSuccess) {
+        const item = items.find(
+          (e) => e.customCanvas.id === itemProduct && e.size === itemSize,
+        );
         const selected: any = {
           id: item?.customCanvas.id,
           price: item?.customCanvas.price,
           quantity: item?.quantity,
           size: item?.size,
         };
+
         setSelectList([selected]);
       }
-    }, []);
+    }, [items]);
 
     const products = React.useMemo(() => {
       return items?.map((item) => ({
@@ -96,8 +115,10 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
                     const indexChecked = selectList.findIndex(
                       (item: any) => item.id === target.value,
                     );
+                    const newSelectList = selectList;
 
-                    setSelectList(selectList.toSpliced(indexChecked, 1));
+                    newSelectList.splice(indexChecked, 1);
+                    setSelectList([...newSelectList]);
                     products[index].isSelected = false;
                   }
                 }}
@@ -108,49 +129,11 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
           ))}
         </ul>
         <div>
-          <form
-            className="mb-4 mt-6 flex items-end gap-2"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <Input
-              classNames={{
-                label: "text-default-700",
-                inputWrapper: "bg-background",
-              }}
-              color="primary"
-              label="Mã giảm giá"
-              labelPlacement="outside"
-              placeholder="Nhập mã giảm giá"
-              variant="bordered"
-            />
-            <Button type="submit">Xác nhận</Button>
-          </form>
           <dl className="flex flex-col gap-4 py-4">
             <div className="flex justify-between">
               <dt className="text-small text-default-500">Giá sản phẩm</dt>
               <dd className="text-small font-semibold text-default-700">
-                {totalPrice || 0} VNĐ
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-small text-default-500">Vận chuyển</dt>
-              <dd className="text-small font-semibold text-default-700">
-                50.000 VNĐ
-              </dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-small text-default-500">Giảm giá</dt>
-              <dd className="text-small font-semibold text-success">
-                - 20.000 VNĐ
-              </dd>
-            </div>
-            <Divider />
-            <div className="flex justify-between">
-              <dt className="text-small font-semibold text-default-500">
-                Tổng cộng
-              </dt>
-              <dd className="text-small font-semibold text-default-700">
-                530.000 VNĐ
+                {totalPrice.toLocaleString("VN-vi") || 0} VNĐ
               </dd>
             </div>
           </dl>

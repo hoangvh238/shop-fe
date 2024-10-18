@@ -20,7 +20,9 @@ export default function ImageGallery({
   }
 
   function deleteImage(index: number) {
-    setImage(images.toSpliced(index, 1));
+    const newImages = images;
+
+    setImage(newImages?.splice(index, 1));
   }
 
   return (

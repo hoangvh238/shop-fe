@@ -1,3 +1,5 @@
+import AdminOrderManagement from "@/components/modules/AdminOrderManagement";
+
 export default function OrderPage() {
-  return <div>Order</div>;
+  return <AdminOrderManagement />;
 }

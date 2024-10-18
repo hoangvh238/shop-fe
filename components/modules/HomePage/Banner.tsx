@@ -32,7 +32,7 @@ function Banner() {
                 className="h-[400px] w-full"
                 src={"/images/banner/" + image}
               />
-              <div className="absolute left-[200px] top-[160px] z-20 flex flex-col items-start justify-center gap-4 space-y-6 text-start text-white">
+              <div className="absolute left-[200px] top-[130px] z-20 flex flex-col items-start justify-center gap-4 space-y-6 text-start text-white">
                 <p className="text-sm font-medium md:text-base">Mùa hè 2024</p>
                 <h1 className="text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
                   Bộ sưu tập

@@ -11,13 +11,7 @@ import {
 } from "@nextui-org/react";
 import React, { useMemo } from "react";
 
-function UserProfileModal({
-  id,
-  onClose,
-}: {
-  id: string;
-  onClose: () => void;
-}) {
+function UserProfileModal({ onClose }: { id: string; onClose: () => void }) {
   const accountInfo = useMemo(() => {
     return (
       <div className="grid grid-cols-2 gap-5">
@@ -90,7 +84,7 @@ function UserProfileModal({
         </div>
         <div>
           <p className="text-default-500">Address</p>
-          <p className="font-medium w-full truncate">
+          <p className="w-full truncate font-medium">
             123 Street, District 1, Ho Chi Minh City, Vietnam
           </p>
         </div>
@@ -105,7 +99,7 @@ function UserProfileModal({
           <h2>User Profile</h2>
         </ModalHeader>
         <ModalBody className="pb-5 transition-all">
-          <div className="flex gap-4 flex-col items-center">
+          <div className="flex flex-col items-center gap-4">
             <Avatar
               className="h-20 w-20"
               src="https://i.pravatar.cc/150?u=a04258114e29026708c"
@@ -116,7 +110,7 @@ function UserProfileModal({
             </div>
           </div>
           <Divider />
-          <Tabs aria-label="Options" variant="underlined" color="primary">
+          <Tabs aria-label="Options" color="primary" variant="underlined">
             <Tab
               key="photos"
               title={

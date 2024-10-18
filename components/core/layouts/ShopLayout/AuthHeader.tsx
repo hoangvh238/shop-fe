@@ -3,17 +3,22 @@
 import Link from "next/link";
 import { Search, ShoppingCart, Heart } from "lucide-react";
 import { useRouter } from "next-nprogress-bar";
+import { usePathname } from "next/navigation";
 
-export default function Header() {
+export default function AuthHeader() {
   const router = useRouter();
+  const currentURL = usePathname();
+
+  const handleLogin = () => {
+    router.push(`/sign-in?redirect=${currentURL}`);
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white shadow-lg transition-all duration-500">
+    <header className="sticky top-0 z-50 w-full bg-white shadow-lg transition-all duration-500 lg:px-24">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
         <Link className="text-2xl font-bold text-gray-800" href="/">
           StyledUp
         </Link>
-
         <nav className="hidden space-x-6 md:flex">
           <Link className="text-gray-600 hover:text-gray-800" href="/">
             Trang chủ
@@ -30,9 +35,18 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center space-x-4">
-          <Link className="text-blue-500 hover:text-blue-600" href="/sign-in">
-            Đăng nhập / Đăng ký
-          </Link>
+          <div className="flex items-center space-x-1">
+            <button
+              className="text-blue-500 hover:text-blue-600"
+              onClick={handleLogin}
+            >
+              Đăng nhập
+            </button>
+            <p className="text-blue-500">/</p>
+            <Link className="text-blue-500 hover:text-blue-600" href="/sign-up">
+              Đăng ký
+            </Link>
+          </div>
           <button className="text-gray-600 hover:text-gray-800">
             <Search className="h-5 w-5" />
           </button>

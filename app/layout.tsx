@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
+import { Toaster } from "sonner";
 
 import { Providers } from "./providers";
 
@@ -36,11 +37,12 @@ export default function RootLayout({
       <body
         className={clsx(
           "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
+        <Toaster closeButton richColors position="top-right" />
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <main className="max-h-[1440px]">{children}</main>
+          <main className="">{children}</main>
         </Providers>
       </body>
     </html>

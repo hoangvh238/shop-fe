@@ -14,20 +14,28 @@ import {
 import { Icon } from "@iconify/react";
 import { AnimatePresence, LazyMotion, m, domAnimation } from "framer-motion";
 import { CreditCard, Truck } from "lucide-react";
-import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { useRouter } from "next-nprogress-bar";
 
-import ShippingForm, { FormShippingType } from "@/components/core/common/shipping-form";
+import ShippingForm, {
+  FormShippingType,
+} from "@/components/core/common/shipping-form";
 import OrderSummary, {
   OrderItemType,
 } from "@/components/core/common/order-summary";
 import PaymentMethodRadio from "@/components/core/common/payment-method-radio";
 import { cn } from "@/utils/cn";
+import { useAddOrderMutation } from "@/store/queries/ordermanagement";
 import { useGetCartQuery } from "@/store/queries/cartManagement";
-import cartItems from "@/helpers/data/cart-items";
+import { enums } from "@/settings";
+import useOrigin from "@/hooks/useOrigin";
+import webLocalStorage from "@/utils/webLocalStorage";
 
 export type OrderingType = {
   inputItem: OrderItemType[];
-  inputOrder: FormShippingType;
+  inputOrder: FormShippingType & {
+    shippingPrice: number;
+  };
 };
 
 function checkFields(form: FormShippingType) {
@@ -42,6 +50,7 @@ function checkFields(form: FormShippingType) {
   ) {
     return false;
   }
+
   return true;
 }
 
@@ -57,31 +66,52 @@ export default function CheckoutModule() {
       district: "",
       city: "",
       phoneNumber: "",
+      shippingPrice: 0,
     },
   });
 
-  const totalPrice: string = React.useMemo(() => {
-    return ordering.inputItem
-      .reduce(
+  const [paymentMethod, setPaymentMethod] = React.useState<string>(
+    enums.PaymentMethod.OnlinePayment,
+  );
+
+  const [urlPayment, setUrlPayment] = React.useState("");
+  const [voucher, setVoucher] = React.useState("");
+
+  const hostname = useOrigin();
+
+  const router = useRouter();
+
+  const [addNewOrder] = useAddOrderMutation();
+
+  const totalPrice: number = React.useMemo(() => {
+    return (
+      ordering.inputOrder.shippingPrice +
+      ordering.inputItem.reduce(
         (currentValue, item) => currentValue + item.price * item.quantity,
         0,
       )
-      .toLocaleString("vi-VN");
-  }, [ordering.inputItem]);
+    );
+  }, [ordering.inputItem, ordering.inputOrder.shippingPrice]);
 
-  // const { cartItems, isFetching } = useGetCartQuery(
-  //   { id: "b3a3cb45-c759-446e-a85d-a3d150bbb8e0" },
-  //   {
-  //     selectFromResult: ({ data, isFetching }) => {
-  //       return {
-  //         cartItems: data?.result ?? [],
-  //         isFetching,
-  //       };
-  //     },
-  //   },
-  // );
+  const { cartItems, isSuccess } = useGetCartQuery(null, {
+    selectFromResult: ({ data, isSuccess, error }) => {
+      if (error) {
+        const newData = webLocalStorage.get("cart");
 
-  const [paymentMethod, setPaymentMethod] = React.useState("8888");
+        return {
+          cartItems: newData ?? [],
+          isSuccess,
+        };
+      }
+
+      return {
+        cartItems: data?.result?.items ?? [],
+        isSuccess,
+      };
+    },
+    refetchOnMountOrArgChange: true,
+  });
+
   const variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 20 : -20,
@@ -99,6 +129,13 @@ export default function CheckoutModule() {
     }),
   };
 
+  const quantity = React.useMemo(() => {
+    return ordering.inputItem.reduce(
+      (value, item) => Number(item?.quantity) + value,
+      0,
+    );
+  }, [ordering.inputItem]);
+
   const submitOrderItem = (item: OrderItemType[]) => {
     setOrdering({ ...ordering, inputItem: item });
   };
@@ -107,11 +144,50 @@ export default function CheckoutModule() {
     setOrdering({ ...ordering, inputOrder: item });
   };
 
-  console.log('ordering', ordering)
+  const submitOrder = () => {
+    const req = {
+      order: {
+        items: ordering.inputItem?.map(({ id, size, quantity }) => ({
+          quantity: quantity,
+          customCanvasId: id,
+          size: size,
+        })),
+        address: `${ordering?.inputOrder?.street}-${ordering?.inputOrder?.district}-${ordering?.inputOrder?.city}`,
+        recipientPhone: ordering?.inputOrder?.phoneNumber,
+        recipientMail: ordering?.inputOrder?.email,
+        recipientName: `${ordering?.inputOrder?.firstname} ${ordering?.inputOrder?.lastname}`,
+        voucherCode: voucher,
+      },
+      paymentMethod: paymentMethod,
+      returnUrl: `${hostname}/detail-order`,
+    };
+    const promise = () =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          const data = await addNewOrder(req).unwrap();
+
+          router.push(data?.result?.message);
+
+          return resolve();
+        } catch (err) {
+          return reject();
+        }
+      });
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Đặt hàng thành công",
+      error: "Đặt hàng thất bại",
+    });
+  };
 
   const paginate = (newDirection: number) => {
-    // if (page + newDirection > 2 && paymentMethod == "8888");
-    if (page + newDirection < 0 || page + newDirection > 2) return;
+    if (page + newDirection > 2) {
+      submitOrder();
+
+      return;
+    }
+    if (page + newDirection < 0) return;
     setPage([page + newDirection, newDirection]);
   };
 
@@ -130,7 +206,7 @@ export default function CheckoutModule() {
 
   const isDisabledButtonGoNext = React.useMemo(() => {
     return (
-      (page === 0 && totalPrice === "0") ||
+      (page === 0 && totalPrice === 0) ||
       (page === 1 && !checkFields(ordering.inputOrder))
     );
   }, [page, ordering]);
@@ -160,9 +236,12 @@ export default function CheckoutModule() {
           <OrderSummary
             hideTitle
             inputItem={ordering.inputItem}
-            items={cartItems?.items}
+            isSuccess={isSuccess}
+            items={cartItems}
+            setVoucher={setVoucher}
             submitOrder={submitOrderItem}
             totalPrice={totalPrice}
+            voucher={voucher}
           />
         );
       case 1:
@@ -171,6 +250,8 @@ export default function CheckoutModule() {
             <ShippingForm
               hideTitle
               inputShipping={ordering.inputOrder}
+              price={totalPrice}
+              quantity={quantity}
               submitOrder={submitOrderShipping}
               variant="bordered"
             />
@@ -198,7 +279,7 @@ export default function CheckoutModule() {
                   <RadioGroup
                     aria-label="Chọn phương thức thanh toán"
                     classNames={{ wrapper: "gap-3" }}
-                    defaultValue="8888"
+                    defaultValue={enums.PaymentMethod.OnlinePayment}
                     onChange={(e) => {
                       setPaymentMethod(e.target.value);
                     }}
@@ -209,14 +290,14 @@ export default function CheckoutModule() {
                       description="Chuyển khoản ngân hàng"
                       icon={<CreditCard height={30} width={30} />}
                       label="Thanh toán trước"
-                      value="8888"
+                      value={enums.PaymentMethod.OnlinePayment}
                     />
                     <PaymentMethodRadio
                       classNames={paymentRadioClasses}
                       description="Thanh toán khi nhận hàng"
                       icon={<Truck height={30} width={30} />}
                       label="Ship COD"
-                      value="4229"
+                      value={enums.PaymentMethod.CashOnDelivery}
                     />
                     {/* <PaymentMethodRadio
                       classNames={paymentRadioClasses}
@@ -263,7 +344,7 @@ export default function CheckoutModule() {
           <div className="flex items-center gap-2">
             <p>
               <span className="text-small font-semibold text-default-700">
-                {totalPrice || 0} VNĐ
+                {totalPrice.toLocaleString("VN-vi") || 0} VNĐ
               </span>
               <span className="ml-1 text-small text-default-500">
                 ({ordering?.inputItem?.length || 0})

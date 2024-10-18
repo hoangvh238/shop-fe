@@ -1,9 +1,9 @@
 import React from "react";
 
-import AdminCreateSubProduct from "@/components/modules/EditProductManagement/CreateSubProduct";
+import AdminCreateSubProduct from "@/components/modules/AdminSubProductManagement/CreateSubProduct";
 
-const AdminCreateManagement = () => {
-    return <AdminCreateSubProduct />;
+const AdminCreateManagement = ({ params: { idProduct } }: { params: { idProduct: string } }) => {
+    return <AdminCreateSubProduct idProduct={idProduct} />;
 };
 
 export default AdminCreateManagement;

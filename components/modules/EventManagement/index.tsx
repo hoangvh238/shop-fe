@@ -80,7 +80,6 @@ function EventManagement() {
     result = [],
     isFetching,
     total = 1,
-    refetch,
   } = useGetAllEventsForManagerQuery(
     {
       page: page,
@@ -107,7 +106,7 @@ function EventManagement() {
           total: data?.result?.totalCount,
         };
       },
-    }
+    },
   );
 
   // const handleSearch = _.debounce((value: string) => {
@@ -150,7 +149,7 @@ function EventManagement() {
         return <div>{cellValue}</div>;
       case "actions":
         return (
-          <div className="relative flex justify-end items-center gap-2">
+          <div className="relative flex items-center justify-end gap-2">
             <Dropdown>
               <DropdownTrigger>
                 <Button isIconOnly size="sm" variant="light">
@@ -170,7 +169,7 @@ function EventManagement() {
 
   const bottomContent = useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-center items-center">
+      <div className="flex items-center justify-center px-2 py-2">
         <Pagination
           isCompact
           showControls
@@ -186,20 +185,20 @@ function EventManagement() {
 
   return (
     <div className="">
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <h3 className="text-2xl font-medium">Event Management</h3>
         <Button color="primary" endContent={<PlusIcon />}>
           Add New
         </Button>
       </div>
 
-      <div className="grid grid-cols-4  w-full gap-4">
+      <div className="grid w-full grid-cols-4 gap-4">
         <div>
           <span>Search</span>
           <Spacer y={2} />
           <Input
             isClearable
-            className=" mb-4"
+            className="mb-4"
             placeholder="Search by name..."
             startContent={<SearchIcon />}
             value={search}
@@ -207,7 +206,7 @@ function EventManagement() {
           />
         </div>
       </div>
-      <div className="grid grid-cols-4 mb-4 gap-4">
+      <div className="mb-4 grid grid-cols-4 gap-4">
         <div>
           <span>Date</span>
           <Spacer y={2} />
@@ -218,10 +217,10 @@ function EventManagement() {
               dateFormatted
                 ? {
                     start: parseDate(
-                      dayjs(dateFormatted?.$gte).format("YYYY-MM-DD")
+                      dayjs(dateFormatted?.$gte).format("YYYY-MM-DD"),
                     ),
                     end: parseDate(
-                      dayjs(dateFormatted?.$lte).format("YYYY-MM-DD")
+                      dayjs(dateFormatted?.$lte).format("YYYY-MM-DD"),
                     ),
                   }
                 : null
@@ -233,9 +232,9 @@ function EventManagement() {
           <span>Location</span>
           <Spacer y={2} />
           <Select
+            className="max-w-xs"
             label="Favorite Animal"
             placeholder="Select an animal"
-            className="max-w-xs"
           >
             {animals.map((animal) => (
               <SelectItem key={animal.key}>{animal.label}</SelectItem>
@@ -246,9 +245,9 @@ function EventManagement() {
           <span>Location</span>
           <Spacer y={2} />
           <Select
+            className="max-w-xs"
             label="Favorite Animal"
             placeholder="Select an animal"
-            className="max-w-xs"
           >
             {animals.map((animal) => (
               <SelectItem key={animal.key}>{animal.label}</SelectItem>

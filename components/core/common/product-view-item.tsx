@@ -14,10 +14,11 @@ import { useRouter } from "next-nprogress-bar";
 
 import ColorRadioItem from "./color-radio-item";
 import TagGroupRadioItem from "./tag-group-radio-item";
+import Toast from "./toast-item";
 
 import { cn } from "@/utils/cn";
 import { useAddCardMutation } from "@/store/queries/cartManagement";
-import { enums } from "@/settings";
+import webLocalStorage from "@/utils/webLocalStorage";
 
 export type ProductViewItemColor = {
   name: string;
@@ -73,10 +74,11 @@ type Item = {
 const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
   ({ name, colors, items, isPopular, className, ...props }, ref) => {
     const [isStarred, setIsStarred] = React.useState(false);
-    const [quatity, setQuantity] = React.useState<string>("1");
+    const [quantity, setQuantity] = React.useState<string>("1");
     const [size, setSize] = React.useState("");
+    const [handleCart, setHandleCart] = React.useState<"buy" | "cart">("buy");
 
-    const [addCart] = useAddCardMutation();
+    const [addCart, { isLoading }] = useAddCardMutation();
 
     const [selectedImage, setSelectedImage] = React.useState(
       items[0]?.images[0],
@@ -88,47 +90,90 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
 
     React.useEffect(() => {
       setSelectItem(items[0]);
+      setSelectedImage(items[0]?.images[0]);
     }, [items]);
 
     const handleAddToCart = async () => {
+      setHandleCart("cart");
       try {
-        await addCart({
-          quantity: Number(quatity),
-          customCanvasId: selectItem?.id,
-          size: size,
-        });
+        await Toast(
+          addCart,
+          {
+            quantity: Number(quantity),
+            customCanvasId: selectItem?.id,
+            size: size,
+          },
+          "Thêm vào giỏ hàng",
+        );
       } catch (err) {
-        console.log('err', err);
+        handleAuth();
       }
     };
     const handleBuy = async () => {
+      setHandleCart("buy");
       try {
         await addCart({
-          quantity: Number(quatity),
+          quantity: Number(quantity),
           customCanvasId: selectItem?.id,
           size: size,
-        });
-        router.push(`/checkout?itemProduct=${selectItem?.id}&size=${size}`);
+        }).unwrap();
       } catch (err) {
-        console.log('err', err);
+        handleAuth();
       }
+      router.push(`/checkout?itemProduct=${selectItem?.id}&size=${size}`);
+      router.refresh();
+    };
+
+    const handleAuth = () => {
+      let oldData = webLocalStorage.get("cart") ?? [];
+
+      const isSame = oldData.some(
+        (data: any) =>
+          data?.customCanvas?.id === selectItem?.id && data?.size === size,
+      );
+
+      if (isSame) {
+        oldData = oldData.map((data: any) => {
+          if (
+            data?.customCanvas?.id === selectItem?.id &&
+            data?.size === size
+          ) {
+            return {
+              ...data,
+              quantity: Number(quantity) + data?.quantity,
+            };
+          } else return data;
+        });
+      } else
+        oldData.push({
+          quantity: Number(quantity),
+          size: size,
+          customCanvas: {
+            price: selectItem?.price,
+            images: selectItem?.images,
+            name: name,
+            id: selectItem?.id,
+          },
+        });
+
+      webLocalStorage.set("cart", [...oldData]);
     };
 
     const decQuantity = () => {
-      setQuantity(String(Number(quatity) - 1));
+      setQuantity(String(Number(quantity) - 1));
     };
     const incQuantity = () => {
-      setQuantity(String(Number(quatity) + 1));
+      setQuantity(String(Number(quantity) + 1));
     };
 
     const valueQuantity: string = React.useMemo(() => {
-      const numberQuantity = Number(quatity);
+      const numberQuantity = Number(quantity);
 
-      if (numberQuantity >= 1 || quatity == "") return quatity;
+      if (numberQuantity >= 1 || quantity == "") return quantity;
       setQuantity("1");
 
       return "1";
-    }, [quatity]);
+    }, [quantity]);
 
     const router = useRouter();
 
@@ -164,7 +209,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
           {/* Main Image */}
           <Image
             alt={name}
-            className="h-full w-full"
+            className="aspect-video h-full max-w-xl bg-cover"
             radius="lg"
             src={selectedImage}
           />
@@ -205,7 +250,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
             </p>
           </div> */}
           <p className="text-xl font-medium tracking-tight">
-            {((selectItem?.price ?? 0) * Number(quatity)).toLocaleString(
+            {((selectItem?.price ?? 0) * Number(quantity)).toLocaleString(
               "vi-VN",
             )}{" "}
             VNĐ
@@ -222,8 +267,8 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               base: "ml-1 mt-6",
               wrapper: "gap-2",
             }}
-            value={enums.Color[selectItem?.color as keyof typeof enums.Color]}
             orientation="horizontal"
+            value={selectItem?.color}
             onChange={(e) => {
               const newSelectionItem = items.find(
                 (item: Item) => item?.color === e.target.value,
@@ -231,6 +276,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
 
               setSize("");
               setSelectItem(newSelectionItem);
+              setSelectedImage(newSelectionItem?.images[0] ?? "");
             }}
           >
             {colors?.map(({ name, hex }) => (
@@ -252,9 +298,9 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
             <RadioGroup
               aria-label="Select size"
               className="gap-1"
+              orientation="horizontal"
               value={size}
               onChange={({ target }) => setSize(target.value)}
-              orientation="horizontal"
             >
               {selectItem?.sizes?.split(",")?.map((size) => (
                 <TagGroupRadioItem key={size} size="lg" value={size}>
@@ -324,7 +370,8 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               fullWidth
               className="text-medium font-medium"
               color="primary"
-              isDisabled={!size || !quatity}
+              isDisabled={!size || !quantity}
+              isLoading={isLoading && handleCart === "buy"}
               size="lg"
               startContent={<Icon icon="solar:cart-large-2-bold" width={24} />}
               onClick={handleBuy}
@@ -335,7 +382,8 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               fullWidth
               className="text-medium font-medium"
               color="primary"
-              isDisabled={!size || !quatity}
+              isDisabled={!size || !quantity}
+              isLoading={isLoading && handleCart === "cart"}
               size="lg"
               startContent={<Icon icon="solar:cart-plus-outline" width={24} />}
               variant="bordered"

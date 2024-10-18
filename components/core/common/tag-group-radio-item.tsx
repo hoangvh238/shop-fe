@@ -10,6 +10,7 @@ import {
   useRadioGroupContext,
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
+
 import { cn } from "@/utils/cn";
 
 export type TagGroupRadioItemProps = Omit<RadioProps, "icon"> & {
@@ -27,7 +28,7 @@ const TagGroupRadioItem = React.forwardRef<
     isFocusVisible,
     getBaseProps,
     getInputProps,
-    getLabelProps,
+    // getLabelProps,
   } = useRadio(props);
 
   const groupContext = useRadioGroupContext();
@@ -110,7 +111,7 @@ const TagGroupRadioItem = React.forwardRef<
           ) : undefined
         }
         variant="flat"
-        {...getLabelProps()}
+        // {...getLabelProps()}
       >
         {children}
       </Chip>

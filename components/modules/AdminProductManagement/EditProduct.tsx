@@ -5,10 +5,13 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next-nprogress-bar";
 import { Input, Textarea } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+import { toast, Toaster } from "sonner";
 
-import { useAddProductMutation } from "@/store/queries/productManagement";
+import {
+  useAddProductMutation,
+  useGetProductQuery,
+} from "@/store/queries/productManagement";
 import UploadImage from "@/components/core/common/upload-image";
-import ConfirmationModal from "@/components/core/common/confirmation-modal";
 
 export const animals = [
   { key: "cat", label: "Cat" },
@@ -26,16 +29,6 @@ export const animals = [
   { key: "crocodile", label: "Crocodile" },
 ];
 
-function checkFields(product: any) {
-  for (const [, value] of Object.entries(product)) {
-    if (!value) {
-      return false;
-    }
-  }
-
-  return true; // Tất cả các trường đều hợp lệ
-}
-
 const initialForm = {
   nameProduct: "",
   codeProduct: "",
@@ -43,11 +36,10 @@ const initialForm = {
   images: [],
 };
 
-function EditProduct({idProduct} : {idProduct : string}) {
+function EditProduct({ idProduct }: { idProduct: string }) {
   const router = useRouter();
   const [form, setForm] = React.useState(initialForm);
   const [inforUpload, setInforUpload] = React.useState<any[]>([]);
-  const [isSuccess, setSuccess] = React.useState(false);
 
   const [addProduct] = useAddProductMutation();
 
@@ -59,29 +51,52 @@ function EditProduct({idProduct} : {idProduct : string}) {
     setForm({ ...form, [key]: value });
   };
 
-  const handleSuccess = () => {
-    setForm(initialForm);
-    setSuccess(true);
-  };
+  const { product, isFetching } = useGetProductQuery(
+    { id: idProduct },
+    {
+      selectFromResult: ({ data, isFetching }) => {
+        return {
+          product: data?.result,
+          isFetching,
+        };
+      },
+    },
+  );
 
-  const submitForm = () => {
-    try {
-      const newProduct = {
-        id: idProduct,
-        name: form.nameProduct,
-        descriptions: form.discProduct,
-        images: form.images.map((image: { url: string }) => image?.url),
-        templateCode: form.codeProduct,
-        content: "{}",
-        providerId: "eb84fd5f-31b1-4222-99b6-d10aff379506",
-      };
+  const submitForm = async () => {
+    const newProduct = {
+      id: idProduct,
+      name: form?.nameProduct ?? product?.name,
+      descriptions: form?.discProduct ?? product?.descriptions,
+      images:
+        form?.images?.length != 0
+          ? form.images.map((image: { url: string }) => image?.url)
+          : product?.images,
+      templateCode: form?.codeProduct ?? product?.templateCode,
+      content: "{}",
+      providerId: product?.providerId ?? "eb84fd5f-31b1-4222-99b6-d10aff379506",
+    };
+    const promise = () =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          await addProduct(newProduct).unwrap();
 
-      addProduct(newProduct);
-    } catch (err) { }
+          return resolve();
+        } catch (err) {
+          return reject();
+        }
+      });
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Edit success",
+      error: "Edit error",
+    });
   };
 
   return (
     <div className="flex flex-col">
+      <Toaster closeButton richColors position="top-right" />
       <div className="flex w-full gap-4">
         <button
           className="text-xl text-slate-600 hover:text-foreground"
@@ -122,21 +137,7 @@ function EditProduct({idProduct} : {idProduct : string}) {
           inforUpload={inforUpload}
           setInforUpload={setInforUpload}
         />
-        {isSuccess && (
-          <ConfirmationModal
-            actionText="Success"
-            header="Add product success"
-            message=""
-            type="success"
-            onClose={handleSuccess}
-            onConfirm={handleSuccess}
-          />
-        )}
-        <Button
-          color="primary"
-          isDisabled={!checkFields(form)}
-          onClick={submitForm}
-        >
+        <Button color="primary" isDisabled={isFetching} onClick={submitForm}>
           Xác nhận
         </Button>
       </div>

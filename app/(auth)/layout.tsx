@@ -1,7 +1,8 @@
-import AuthLayout from "@/components/core/layouts/AuthLayout";
-
 function AuthRootLayout({ children }: { children: React.ReactElement }) {
-  return <AuthLayout>{children}</AuthLayout>;
+  return (
+    <main className="flex h-screen w-screen items-center justify-center overflow-hidden">
+      {children}
+    </main>
+  );
 }
-
 export default AuthRootLayout;

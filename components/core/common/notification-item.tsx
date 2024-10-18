@@ -37,7 +37,7 @@ const NotificationItem = React.forwardRef<
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     /**
      * Defines the content for different types of notifications.
@@ -79,7 +79,7 @@ const NotificationItem = React.forwardRef<
           {
             "bg-primary-50/50": !isRead,
           },
-          className
+          className,
         )}
         {...props}
       >
@@ -104,7 +104,7 @@ const NotificationItem = React.forwardRef<
         </div>
       </div>
     );
-  }
+  },
 );
 
 NotificationItem.displayName = "NotificationItem";

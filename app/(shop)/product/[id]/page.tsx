@@ -1,7 +1,8 @@
+import axios from "axios";
+
 import ProductDetailModule from "@/components/modules/ProductDetailModule";
 import { endpointProduct } from "@/helpers/enpoints";
 import { enums } from "@/settings";
-import axios from "axios";
 
 const getProductByID = async (id: string) => {
   let config = {
@@ -15,6 +16,7 @@ const getProductByID = async (id: string) => {
 
   try {
     const response = await axios.request(config);
+
     return response;
   } catch (error) {
     return error;
@@ -34,7 +36,7 @@ export default async function ProductDetailPage({
       .split(",")
       .map((color: keyof typeof enums.Color) => ({
         name: color,
-        hex: enums.Color[color as keyof typeof enums.Color],
+        hex: enums.Color[color.toUpperCase() as keyof typeof enums.Color],
       })),
   };
 

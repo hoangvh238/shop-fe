@@ -15,12 +15,7 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
-  SharedSelection,
   Tooltip,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next-nprogress-bar";
@@ -30,15 +25,13 @@ import { users, fakeUsers } from "@/helpers/data/table";
 import {
   DeleteIcon,
   EditIcon,
-  EyeIcon,
   SearchIcon,
 } from "@/components/core/common/icons";
 import useTableQueries from "@/hooks/useTableQueries";
 import ConfirmationModal from "@/components/core/common/confirmation-modal";
 import Opener from "@/components/core/common/opener";
-import UserProfileModal from "@/components/core/common/user-profile-modal";
-import { SubProduct } from "@/helpers/data/adminProducts";
-import { useGetAllSubProductQuery } from "@/store/queries/productManagement";
+import { Product } from "@/helpers/data/adminProducts";
+import { useGetAllOrderMutation } from "@/store/queries/ordermanagement";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
@@ -54,76 +47,34 @@ type User = (typeof fakeUsers)[0];
 // ];
 const columns = [
   { name: "ID", uid: "id" },
+  { name: "TÊN", uid: "name" },
   { name: "GIÁ", uid: "price" },
   {
-    name: "MÃ MÀU",
-    uid: "color",
+    name: "ĐỊA CHỈ",
+    uid: "address",
   },
   {
-    name: "KÍCH CỠ",
-    uid: "size",
+    name: "EMAIL",
+    uid: "mail",
+  },
+  {
+    name: "SDT",
+    uid: "phone",
   },
   { name: "TRẠNG THÁI", uid: "status" },
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const departments = [
-  {
-    id: 1,
-    name: "Engineering",
-  },
-  {
-    id: 2,
-    name: "Marketing",
-  },
-  {
-    id: 3,
-    name: "Sales",
-  },
-  {
-    id: 4,
-    name: "HR",
-  },
-  {
-    id: 5,
-    name: "Finance",
-  },
-];
-
-const roles = [
-  {
-    id: 1,
-    name: "Admin",
-  },
-  {
-    id: 2,
-    name: "Exam Manager",
-  },
-  {
-    id: 3,
-    name: "IT Support",
-  },
-  {
-    id: 4,
-    name: "Proctor",
-  },
-];
-
 const CellContent = ({
   item,
   columnKey,
-  productID,
 }: {
   item: any;
   columnKey: React.Key;
-  productID: string;
 }) => {
   const router = useRouter();
 
-  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
-    new Set(["text"]),
-  );
-
+  const [selectedKeys] = React.useState<Selection>(new Set(["text"]));
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys],
@@ -135,75 +86,56 @@ const CellContent = ({
 
       switch (columnKey) {
         case "id":
-          return <p className="text-bold text-small capitalize">{user.id}</p>;
+          return (
+            <p className="text-bold text-small capitalize">{user.orderCode}</p>
+          );
+        case "name":
+          return (
+            <p className="text-bold text-small capitalize">
+              {user.recipientName}
+            </p>
+          );
         case "price":
           return (
-            <p className="text-bold text-small capitalize">{user.price}</p>
+            <p className="text-bold text-small capitalize">{user.totalPrice}</p>
           );
-        case "color":
+        case "address":
           return (
-            <div className="flex items-center">
-              <span
-                className="block size-8 rounded-full"
-                style={{ backgroundColor: user.color }}
-              />
-            </div>
+            <p className="text-bold text-small capitalize">{user.address}</p>
           );
-        case "size":
-          return <p className="text-bold text-small uppercase">{user.sizes}</p>;
+        case "mail":
+          return (
+            <p className="text-bold text-small capitalize">
+              {user.recipientEmail ?? "null"}
+            </p>
+          );
+        case "phone":
+          return (
+            <p className="text-bold text-small capitalize">
+              {user.recipientPhone}
+            </p>
+          );
         case "status":
           return (
-            <Dropdown>
-              <DropdownTrigger>
-                {selectedValue === "available" ? (
-                  <Chip className="capitalize" color="success">
-                    Đang bán
-                  </Chip>
-                ) : (
-                  <Chip className="capitalize" color="danger">
-                    Dừng bán
-                  </Chip>
-                )}
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Single selection example"
-                selectedKeys={selectedKeys}
-                selectionMode="single"
-                variant="flat"
-                onSelectionChange={setSelectedKeys}
-              >
-                <DropdownItem key="available">Đang bán</DropdownItem>
-                <DropdownItem key="unavailable" className="text-danger">
-                  Dừng bán
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <div>
+              {user?.orderStatus === "Pending" ? (
+                <Chip className="capitalize" color="warning">
+                  Đang xử lí
+                </Chip>
+              ) : (
+                <Chip className="capitalize" color="success">
+                  Đã xử lí
+                </Chip>
+              )}
+            </div>
           );
         case "actions":
           return (
             <div className="relative flex items-center justify-center gap-2">
-              <Opener
-                renderContent={({ close }) => (
-                  <UserProfileModal id="" onClose={close} />
-                )}
-                renderOpener={({ open }) => (
-                  <Tooltip content="Xem 5 mẫu">
-                    <button
-                      className="cursor-pointer text-lg text-default-400 active:opacity-50"
-                      onClick={open}
-                    >
-                      <EyeIcon />
-                    </button>
-                  </Tooltip>
-                )}
-              />
               <Tooltip content="Chỉnh sửa">
                 <button
                   className="cursor-pointer text-lg text-default-400 active:opacity-50"
-                  onClick={() =>
-                    router.push(`/admin/product/${productID}/edit/${user?.id}`)
-                  }
+                  onClick={() => router.push(`/admin/product/edit/${user?.id}`)}
                 >
                   <EditIcon />
                 </button>
@@ -242,13 +174,11 @@ const CellContent = ({
   return renderCell(item, columnKey);
 };
 
-export default function AdminSubProductManagement({
-  productID,
-}: {
-  productID: string;
-}) {
+export default function AdminCustomCanvas() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const [data, setData] = React.useState({ items: [], total: "" });
 
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 5;
@@ -258,20 +188,71 @@ export default function AdminSubProductManagement({
 
   const status = rawStatus !== "all" ? new Set(rawStatus.split(",")) : "all";
 
-  const { subProducts } = useGetAllSubProductQuery(
-    { id: productID },
-    {
-      selectFromResult: ({ data }) => {
-        return {
-          subProducts: data?.result?.products ?? [],
-        };
-      },
-    },
-  );
+  // const { products, isFetching } = useGetAllProductQuery(
+  //   {
+  //     filter: "",
+  //     skip: 0,
+  //     pageIndex: page,
+  //     pageSize: limit,
+  //     sortField: "name",
+  //     asc: true,
+  //   },
+  //   {
+  //     selectFromResult: ({ data, isFetching }: any) => {
+  //       const newData = data?.result?.items?.map((item: ProductItem) => {
+  //         return {
+  //           ...item,
+  //           colors: [
+  //             {
+  //               name: "red",
+  //               hex: "#FF0000",
+  //             },
+  //             {
+  //               name: "blue",
+  //               hex: "#0000ff",
+  //             },
+  //             {
+  //               name: "black",
+  //               hex: "#000000",
+  //             },
+  //           ],
+  //         };
+  //       });
 
-  console.log('first', subProducts)
+  //       return {
+  //         products: newData ?? [],
+  //         isFetching,
+  //       };
+  //     },
+  //   },
+  // );
 
-  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
+  const [getAllOrder] = useGetAllOrderMutation();
+
+  const getNewOrder = async () => {
+    const { data } = await getAllOrder({
+      filter: "",
+      skip: (page - 1) * limit,
+      pageIndex: page,
+      pageSize: limit,
+      sortField: "name",
+      asc: true,
+    });
+
+    setData(data?.result);
+  };
+
+  React.useEffect(() => {
+    getNewOrder();
+  }, [page, limit]);
+
+  const orders = React.useMemo(() => {
+    return data?.items ?? [];
+  }, [data]);
+
+  const totalPage: number = React.useMemo(() => Number(data?.total), [data]);
+
+  const [visibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
 
@@ -279,10 +260,6 @@ export default function AdminSubProductManagement({
     new Set(["text"]),
   );
 
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys],
-  );
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
     column: "age",
     direction: "ascending",
@@ -322,7 +299,7 @@ export default function AdminSubProductManagement({
     return filteredUsers;
   }, [users, search, status]);
 
-  const pages = Math.ceil(filteredItems.length / limit) || 1;
+  const pages = Math.ceil(totalPage / limit) || 1;
 
   const items = React.useMemo(() => {
     const start = (page - 1) * limit;
@@ -332,30 +309,14 @@ export default function AdminSubProductManagement({
   }, [page, filteredItems, limit]);
 
   const sortedItems = React.useMemo(() => {
-    return [...subProducts].sort((a: SubProduct, b: SubProduct) => {
-      const first = a[sortDescriptor.column as keyof SubProduct] as number;
-      const second = b[sortDescriptor.column as keyof SubProduct] as number;
+    return [...orders].sort((a: Product, b: Product) => {
+      const first = a[sortDescriptor.column as keyof Product] as number;
+      const second = b[sortDescriptor.column as keyof Product] as number;
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
-  }, [sortDescriptor, items, subProducts]);
-
-  const handleMultipleSelection = React.useCallback((keys: SharedSelection) => {
-    handleFilter({ status: Array.from(keys).join(",") });
-  }, []);
-
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      handleChangePage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      handleChangePage(page - 1);
-    }
-  }, [page]);
+  }, [sortDescriptor, items, orders]);
 
   const onLimitChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -437,9 +398,9 @@ export default function AdminSubProductManagement({
             <Button
               color="primary"
               startContent={<Plus size={16} />}
-              onClick={() => router.push(`/admin/product/${productID}/create`)}
+              onClick={() => router.push("/admin/customCanvas/create")}
             >
-              Thêm mẫu mới
+              Thêm Thiết kế mới
             </Button>
           </div>
         </div>
@@ -539,15 +500,14 @@ export default function AdminSubProductManagement({
           )}
         </TableHeader>
         <TableBody emptyContent={"No users found"} items={sortedItems}>
-          {(item) => (
-            <TableRow key={item.id}>
+          {(item: any) => (
+            <TableRow key={item?.id}>
               {(columnKey) => (
                 <TableCell>
                   <CellContent
-                    key={item.id}
+                    key={item?.id}
                     columnKey={columnKey}
                     item={item}
-                    productID={productID}
                   />
                 </TableCell>
               )}

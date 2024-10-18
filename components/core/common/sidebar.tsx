@@ -15,9 +15,9 @@ import {
   ListboxSection,
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
+import { useRouter } from "next/navigation";
 
 import { cn } from "@/utils/cn";
-import { useRouter } from "next/navigation";
 
 export enum SidebarItemType {
   Nest = "nest",
@@ -61,7 +61,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     const router = useRouter();
 
@@ -111,7 +111,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                 },
                 {
                   "inline-block w-11": isCompact && isNestType,
-                }
+                },
               ),
             }}
             endContent={
@@ -124,7 +124,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                 <Icon
                   className={cn(
                     "text-default-500 group-data-[selected=true]:text-foreground",
-                    iconClassName
+                    iconClassName,
                   )}
                   icon={item.icon}
                   width={24}
@@ -142,7 +142,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                     <Icon
                       className={cn(
                         "text-default-500 group-data-[selected=true]:text-foreground",
-                        iconClassName
+                        iconClassName,
                       )}
                       icon={item.icon}
                       width={24}
@@ -171,7 +171,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                         <Icon
                           className={cn(
                             "text-default-500 group-data-[selected=true]:text-foreground",
-                            iconClassName
+                            iconClassName,
                           )}
                           icon={item.icon}
                           width={24}
@@ -205,7 +205,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
           </ListboxItem>
         );
       },
-      [isCompact, hideEndContent, iconClassName, items]
+      [isCompact, hideEndContent, iconClassName, items],
     );
 
     const renderItem = React.useCallback(
@@ -233,7 +233,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                 <Icon
                   className={cn(
                     "text-default-500 group-data-[selected=true]:text-foreground",
-                    iconClassName
+                    iconClassName,
                   )}
                   icon={item.icon}
                   width={24}
@@ -252,7 +252,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                     <Icon
                       className={cn(
                         "text-default-500 group-data-[selected=true]:text-foreground",
-                        iconClassName
+                        iconClassName,
                       )}
                       icon={item.icon}
                       width={24}
@@ -266,7 +266,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
           </ListboxItem>
         );
       },
-      [isCompact, hideEndContent, iconClassName, itemClasses?.base]
+      [isCompact, hideEndContent, iconClassName, itemClasses?.base],
     );
 
     return (
@@ -285,11 +285,11 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
           ...itemClasses,
           base: cn(
             "px-3 min-h-11 rounded-large h-[44px] data-[selected=true]:bg-default-100",
-            itemClasses?.base
+            itemClasses?.base,
           ),
           title: cn(
             "text-small font-medium text-default-500 group-data-[selected=true]:text-foreground",
-            itemClasses?.title
+            itemClasses?.title,
           ),
         }}
         items={items}
@@ -324,7 +324,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
         }}
       </Listbox>
     );
-  }
+  },
 );
 
 Sidebar.displayName = "Sidebar";

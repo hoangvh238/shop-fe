@@ -1,14 +1,18 @@
+"use client";
 import AvailableProducts from "./AvailableProducts";
 import Banner from "./Banner";
-import Blog from "./Blog";
 import Trending from "./Trending";
 
 function HomePageModule() {
+
+  
   return (
     <div className="flex w-full flex-col">
       <Banner />
-      <Trending />
-      <AvailableProducts />
+      <div className="px-2 lg:px-24">
+        <Trending />
+        <AvailableProducts />
+      </div>
       {/* <Blog /> */}
     </div>
   );

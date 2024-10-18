@@ -24,12 +24,12 @@ export default function Blog() {
             <Card key={index} className="w-full">
               <div className="relative">
                 <img
-                  src="https://media-fmplus.cdn.vccloud.vn/uploads/sliders/f3763227-9b60-4a63-bb5d-8e779f8bc12e.jpg"
                   alt="Blog post"
                   className="h-48 w-full object-cover"
-                  width="300"
                   height="200"
+                  src="https://media-fmplus.cdn.vccloud.vn/uploads/sliders/f3763227-9b60-4a63-bb5d-8e779f8bc12e.jpg"
                   style={{ aspectRatio: "300/200", objectFit: "cover" }}
+                  width="300"
                 />
                 <div className="absolute left-2 top-2 rounded-full bg-black px-3 py-1 text-sm text-white">
                   New
@@ -59,8 +59,8 @@ export default function Blog() {
                   </div>
                 </div>
                 <Link
-                  href="#"
                   className="mt-2 block text-blue-600"
+                  href="#"
                   prefetch={false}
                 >
                   Learn More <ArrowRight className="inline h-4 w-4" />

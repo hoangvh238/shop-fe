@@ -267,18 +267,6 @@ export default function UserManagement() {
     handleFilter({ status: Array.from(keys).join(",") });
   }, []);
 
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      handleChangePage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      handleChangePage(page - 1);
-    }
-  }, [page]);
-
   const onLimitChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       handleChangeLimit(Number(e.target.value));

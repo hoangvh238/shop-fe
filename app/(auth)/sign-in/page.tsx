@@ -1,5 +1,3 @@
-"use client";
-
 import SignInModule from "@/components/modules/SignInModule";
 
 function SignInPage() {

@@ -5,9 +5,16 @@ const API_SERVER_SOCKET = process?.env?.NEXT_PUBLIC_SERVER_SOCKET_URL;
 const ASSETS_URL = process.env.NEXT_PUBLIC_ASSETS_URL;
 const SITE_URL = '/';
 
+const GOSHIP = {
+  PASSWORD: process.env.NEXT_PUBLIC_GOSHIP_PASSWORD,
+  CLIENT_ID: process.env.NEXT_PUBLIC_GOSHIP_CLIENT_ID,
+  CLIENT_SECRET: process.env.NEXT_PUBLIC_GOSHIP_CLIENT_SECRET,
+};
 
 const USER_INFO = '_user_info';
+const USER_ID = '_user_id';
 const ACCESS_TOKEN = '_access_token';
+const ACCESS_TOKEN_GOSHIP = '_access_token_goship';
 const REFRESH_TOKEN = '_refresh_token';
 const IS_AUTH = '_is_auth';
 
@@ -22,6 +29,7 @@ const ASSETS_URL_IMAGE = 'https://api.cloudinary.com/v1_1/dmeetnppd/image/upload
 
 const constants = {
   API_SERVER,
+  USER_ID,
   ASSETS_URL,
   SITE_URL,
   ASSETS_URL_IMAGE,
@@ -35,6 +43,8 @@ const constants = {
   TIME_FORMAT,
   SCRIPT_JITSI,
   API_SERVER_SOCKET,
+  GOSHIP,
+  ACCESS_TOKEN_GOSHIP,
 };
 
 export default constants;

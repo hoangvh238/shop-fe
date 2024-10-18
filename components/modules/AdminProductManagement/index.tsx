@@ -15,7 +15,6 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
-  SharedSelection,
   Tooltip,
   Dropdown,
   DropdownTrigger,
@@ -37,11 +36,13 @@ import useTableQueries from "@/hooks/useTableQueries";
 import ConfirmationModal from "@/components/core/common/confirmation-modal";
 import Opener from "@/components/core/common/opener";
 import UserProfileModal from "@/components/core/common/user-profile-modal";
-import { Product } from "@/helpers/data/adminProducts";
 import {
+  useDeleteProductMutation,
   useGetAllProductMutation,
   useGetAllSubProductQuery,
 } from "@/store/queries/productManagement";
+import { enums } from "@/settings";
+import Toast from "@/components/core/common/toast-item";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
@@ -67,48 +68,6 @@ const columns = [
   { name: "ACTIONS", uid: "actions" },
 ];
 
-const departments = [
-  {
-    id: 1,
-    name: "Engineering",
-  },
-  {
-    id: 2,
-    name: "Marketing",
-  },
-  {
-    id: 3,
-    name: "Sales",
-  },
-  {
-    id: 4,
-    name: "HR",
-  },
-  {
-    id: 5,
-    name: "Finance",
-  },
-];
-
-const roles = [
-  {
-    id: 1,
-    name: "Admin",
-  },
-  {
-    id: 2,
-    name: "Exam Manager",
-  },
-  {
-    id: 3,
-    name: "IT Support",
-  },
-  {
-    id: 4,
-    name: "Proctor",
-  },
-];
-
 const CellContent = ({
   item,
   columnKey,
@@ -120,13 +79,14 @@ const CellContent = ({
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set(["text"]),
   );
+  const [deleteProduct] = useDeleteProductMutation();
 
-  const { numberOfSubproduct } = useGetAllSubProductQuery(
+  const { subProducts } = useGetAllSubProductQuery(
     { id: item.id },
     {
       selectFromResult: ({ data }) => {
         return {
-          numberOfSubproduct: data?.result?.products?.length,
+          subProducts: data?.result?.products,
         };
       },
     },
@@ -136,6 +96,11 @@ const CellContent = ({
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys],
   );
+
+  const handleDeleteProduct = (id: string) => {
+    Toast(deleteProduct, { id: id }, "Xóa sản phẩm");
+    router.refresh();
+  };
 
   const renderCell = React.useCallback(
     (user: any, columnKey: React.Key) => {
@@ -157,9 +122,21 @@ const CellContent = ({
           );
         case "numberOfSubProducts":
           return (
-            <p className="text-bold text-small capitalize">
-              {numberOfSubproduct}
-            </p>
+            <div className="relative flex items-center">
+              {subProducts?.map((subProduct: any, index: number) => (
+                <span
+                  key={subProduct?.id}
+                  className="absolute top-1/2 block size-6 -translate-y-1/2 rounded-full border-black shadow-[-1px_0px_2px_-1px_#000]"
+                  style={{
+                    backgroundColor:
+                      enums.Color[
+                        subProduct.color.toUpperCase() as keyof typeof enums.Color
+                      ],
+                    left: index * 10,
+                  }}
+                />
+              ))}
+            </div>
           );
         case "status":
           return (
@@ -197,8 +174,8 @@ const CellContent = ({
                 renderContent={({ close }) => (
                   <UserProfileModal id="" onClose={close} />
                 )}
-                renderOpener={({ open }) => (
-                  <Tooltip content={`Xem ${numberOfSubproduct} mẫu`}>
+                renderOpener={() => (
+                  <Tooltip content={`Xem ${subProducts?.length} mẫu`}>
                     <button
                       className="cursor-pointer text-lg text-default-400 active:opacity-50"
                       onClick={() => router.push(`/admin/product/${user?.id}`)}
@@ -224,7 +201,10 @@ const CellContent = ({
                     message="Sau khi xoá, sản phẩm sẽ không thể khôi phục."
                     type="danger"
                     onClose={close}
-                    onConfirm={close}
+                    onConfirm={() => {
+                      handleDeleteProduct(user?.id);
+                      close();
+                    }}
                   />
                 )}
                 renderOpener={({ open }) => (
@@ -244,7 +224,7 @@ const CellContent = ({
           return cellValue;
       }
     },
-    [selectedValue, numberOfSubproduct],
+    [selectedValue, subProducts],
   );
 
   return renderCell(item, columnKey);
@@ -307,30 +287,23 @@ export default function AdminProductManagement() {
 
   const getNewProduct = async () => {
     const { data } = await getAllProducts({
-      filter: "",
+      filter: `search=${search}`,
       skip: (page - 1) * limit,
       pageIndex: page,
       pageSize: limit,
-      sortField: "name",
-      asc: true,
+      sortField: (sortDescriptor.column as string) ?? "name",
+      asc: sortDescriptor.direction === "ascending",
     });
 
     setData(data?.result);
   };
 
-  React.useEffect(() => {
-    getNewProduct();
-  }, [page, limit]);
-
   const products = React.useMemo(() => {
     return data?.items;
   }, [data]);
-  const totalPage = React.useMemo(() => data?.total, [data]);
+  const totalPage: number = React.useMemo(() => Number(data?.total), [data]);
 
-  console.log("products", products);
-  console.log("products", totalPage);
-
-  const [visibleColumns, setVisibleColumns] = React.useState<Selection>(
+  const [visibleColumns] = React.useState<Selection>(
     new Set(INITIAL_VISIBLE_COLUMNS),
   );
 
@@ -338,14 +311,14 @@ export default function AdminProductManagement() {
     new Set(["text"]),
   );
 
-  const selectedValue = React.useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys],
-  );
   const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-    column: "age",
+    column: "name",
     direction: "ascending",
   });
+
+  React.useEffect(() => {
+    getNewProduct();
+  }, [page, limit, sortDescriptor]);
 
   const { handleSearch, handleFilter, handleChangePage, handleChangeLimit } =
     useTableQueries();
@@ -381,7 +354,7 @@ export default function AdminProductManagement() {
     return filteredUsers;
   }, [users, search, status]);
 
-  const pages = Math.ceil(filteredItems.length / limit) || 1;
+  const pages = Math.ceil(totalPage / limit) || 1;
 
   const items = React.useMemo(() => {
     const start = (page - 1) * limit;
@@ -389,32 +362,6 @@ export default function AdminProductManagement() {
 
     return filteredItems.slice(start, end);
   }, [page, filteredItems, limit]);
-
-  const sortedItems = React.useMemo(() => {
-    return [...products].sort((a: Product, b: Product) => {
-      const first = a[sortDescriptor.column as keyof Product] as number;
-      const second = b[sortDescriptor.column as keyof Product] as number;
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [sortDescriptor, items, products]);
-
-  const handleMultipleSelection = React.useCallback((keys: SharedSelection) => {
-    handleFilter({ status: Array.from(keys).join(",") });
-  }, []);
-
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      handleChangePage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      handleChangePage(page - 1);
-    }
-  }, [page]);
 
   const onLimitChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -438,6 +385,7 @@ export default function AdminProductManagement() {
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
+            defaultValue={search}
             placeholder="Tìm kiếm sản phẩm"
             startContent={<SearchIcon />}
             onClear={() => onClear()}
@@ -504,10 +452,10 @@ export default function AdminProductManagement() {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-small text-default-400">
-            Total {users.length} users
+            Tổng {products.length} Sản phẩm
           </span>
           <label className="flex items-center text-small text-default-400">
-            Rows per page:
+            Số cột trên trang:
             <select
               className="bg-transparent text-small text-default-400 outline-none"
               onChange={onLimitChange}
@@ -526,7 +474,7 @@ export default function AdminProductManagement() {
     visibleColumns,
     onSearchChange,
     onLimitChange,
-    users.length,
+    products.length,
     hasSearchFilter,
   ]);
 
@@ -591,19 +539,20 @@ export default function AdminProductManagement() {
           {(column) => (
             <TableColumn
               key={column.uid}
+              allowsSorting
               align={column.uid === "actions" ? "center" : "start"}
             >
               {column.name}
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No users found"} items={sortedItems}>
-          {(item) => (
-            <TableRow key={item.id}>
+        <TableBody emptyContent={"No users found"} items={products}>
+          {(item: any) => (
+            <TableRow key={item?.id}>
               {(columnKey) => (
                 <TableCell>
                   <CellContent
-                    key={item.id}
+                    key={item?.id}
                     columnKey={columnKey}
                     item={item}
                   />

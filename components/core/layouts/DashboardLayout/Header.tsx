@@ -34,7 +34,7 @@ export default function Header() {
     >
       {/* Right Menu */}
       <NavbarContent
-        className="ml-auto h-12  items-center gap-0 max-w-full "
+        className="ml-auto h-12 max-w-full items-center gap-0"
         justify="end"
       >
         {/* Theme change */}

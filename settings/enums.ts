@@ -17,13 +17,6 @@ enum ActiveForgotPasswordStep {
   step3 = "3",
 }
 
-enum StatusTransaction {
-  PENDING = "PENDING",
-  COMPLETED = "COMPLETED",
-  CANCELLED = "CANCELLED",
-  FAILED = "FAILED",
-}
-
 enum TransactionType {
   PROMOTE = "promote",
   MEMBERSHIP = "membership",
@@ -41,15 +34,6 @@ enum FreeType {
   YEAR = "ANNUAL",
 }
 
-enum PaymentMethod {
-  CREDIT_CARD = "CREDIT_CARD",
-  AUTHORIZE_NET = "AUTHORIZE_NET",
-  CARD_BANKING = "CARD_BANKING",
-  IYZIPAY = "IYZIPAY",
-  PAYPAL = "PAYPAL",
-  DIRECT_TRANSFER = "DIRECT_TRANSFER",
-}
-
 enum UserRole {
   Admin = "admin",
   ExamDepartment = "exam_department",
@@ -58,26 +42,73 @@ enum UserRole {
 }
 
 enum Color {
-  White = "#FFFFFF",
-  Red = "#FF0000",
-  Blue = "#0000FF",
-  Green = "#00FF00",
-  Orange = "#FFA500",
-  Black = "#000000",
-  Yellow = "#FFFF00",
+  WHITE = "#FFFFFF",
+  RED = "#FF0000",
+  BLUE = "#0000FF",
+  GREEN = "#00FF00",
+  ORANGE = "#FFA500",
+  BLACK = "#000000",
+  YELLOW = "#FFFF00",
+}
+enum ColorTranslate {
+  WHITE = "Trắng",
+  RED = "Đỏ",
+  BLUE = "Xanh Biển",
+  GREEN = "Xanh lá",
+  ORANGE = "Cam",
+  BLACK = "Đen",
+  YELLOW = "Vàng",
+}
+enum OrderStatus {
+  Pending = "Pending",
+  Confirmed = "Confirmed",
+  Shipped = "Shipped",
+  Delivered = "Delivered",
+  Canceled = "Canceled",
+}
+enum OrderStatusTranslate {
+  Pending = "Đang xử lí",
+  Confirmed = "Đã xác nhận",
+  Shipped = "Đang vận chuyển",
+  Delivered = "Đã giao hàng",
+  Canceled = "Đã hủy",
+}
+enum PaymentMethod {
+  CashOnDelivery = "CashOnDelivery", // Nhận tiền khi thanh toán
+  OnlinePayment = "OnlinePayment", // Thanh toán online
+}
+enum PaymentMethodTranslate {
+  CashOnDelivery = "Thanh toán tại nhà", // Nhận tiền khi thanh toán
+  OnlinePayment = "Thanh toán trực tiếp", // Thanh toán online
+}
+
+enum TransactionStastus {
+  Pending = "Pending",
+  Success = "Success",
+  Failed = "Failed",
+}
+enum TransactionStastusTranslate {
+  Pending = "Đang xử lí",
+  Success = "Thành công",
+  Failed = "Thất bại",
 }
 
 const enums = {
   FieldFormItemType,
   CardTypes,
-  StatusTransaction,
   TransactionType,
   CardMenu,
   FreeType,
-  PaymentMethod,
   ActiveForgotPasswordStep,
   UserRole,
   Color,
+  ColorTranslate,
+  OrderStatus,
+  PaymentMethod,
+  TransactionStastus,
+  OrderStatusTranslate,
+  TransactionStastusTranslate,
+  PaymentMethodTranslate,
 };
 
 export default enums;

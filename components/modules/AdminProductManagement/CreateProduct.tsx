@@ -5,10 +5,10 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next-nprogress-bar";
 import { Input, Textarea } from "@nextui-org/input";
 import { Button } from "@nextui-org/button";
+import { toast, Toaster } from "sonner";
 
 import { useAddProductMutation } from "@/store/queries/productManagement";
 import UploadImage from "@/components/core/common/upload-image";
-import ConfirmationModal from "@/components/core/common/confirmation-modal";
 
 export const animals = [
   { key: "cat", label: "Cat" },
@@ -33,7 +33,7 @@ function checkFields(product: any) {
     }
   }
 
-  return true; // Tất cả các trường đều hợp lệ
+  return product?.images.length != 0; // Tất cả các trường đều hợp lệ
 }
 
 const initialForm = {
@@ -47,7 +47,6 @@ function CreateProduct() {
   const router = useRouter();
   const [form, setForm] = React.useState(initialForm);
   const [inforUpload, setInforUpload] = React.useState<any[]>([]);
-  const [isSuccess, setSuccess] = React.useState(false);
 
   const [addProduct] = useAddProductMutation();
 
@@ -59,29 +58,37 @@ function CreateProduct() {
     setForm({ ...form, [key]: value });
   };
 
-  const handleSuccess = () => {
-    setForm(initialForm);
-    setSuccess(true);
-  };
-
   const submitForm = () => {
-    try {
-      const newProduct = {
-        // id: "",
-        name: form.nameProduct,
-        descriptions: form.discProduct,
-        images: form.images.map((image: { url: string }) => image?.url),
-        templateCode: form.codeProduct,
-        content: "{}",
-        providerId: "eb84fd5f-31b1-4222-99b6-d10aff379506",
-      };
+    const newProduct = {
+      // id: "",
+      name: form.nameProduct,
+      descriptions: form.discProduct,
+      images: form.images.map((image: { url: string }) => image?.url),
+      templateCode: form.codeProduct,
+      content: "{}",
+      providerId: "eb84fd5f-31b1-4222-99b6-d10aff379506",
+    };
+    const promise = () =>
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          await addProduct(newProduct).unwrap();
 
-      addProduct(newProduct);
-    } catch (err) { }
+          return resolve();
+        } catch (err) {
+          return reject();
+        }
+      });
+
+    toast.promise(promise, {
+      loading: "Loading...",
+      success: "Add product success",
+      error: "Add product error",
+    });
   };
 
   return (
     <div className="flex flex-col">
+      <Toaster closeButton richColors position="top-right" />
       <div className="flex w-full gap-4">
         <button
           className="text-xl text-slate-600 hover:text-foreground"
@@ -124,16 +131,6 @@ function CreateProduct() {
           inforUpload={inforUpload}
           setInforUpload={setInforUpload}
         />
-        {isSuccess && (
-          <ConfirmationModal
-            actionText="Success"
-            header="Add product success"
-            message=""
-            type="success"
-            onClose={handleSuccess}
-            onConfirm={handleSuccess}
-          />
-        )}
         <Button
           color="primary"
           isDisabled={!checkFields(form)}

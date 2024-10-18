@@ -64,6 +64,105 @@ export const authAPI = baseApi.injectEndpoints({
         flashError: true,
       }),
     }),
+    addSubProduct: build.mutation<
+      any,
+      {
+        id?: string;
+        name: string;
+        content?: string;
+        images: string[];
+        lensVRUrl?: string;
+        canvasCode?: string;
+        isPublic?: boolean;
+        price: number;
+        color: string;
+        sizes: string;
+        authorId?: string;
+        templateId?: string;
+      }
+    >({
+      query: (params: {
+        id?: string;
+        name: string;
+        content?: string;
+        images: string[];
+        lensVRUrl?: string;
+        canvasCode?: string;
+        isPublic?: boolean;
+        price: number;
+        color: string;
+        sizes: string;
+        authorId?: string;
+        templateId?: string;
+      }) => ({
+        url: endpointProduct.ADD_NEW_SUBPRODUCT,
+        method: "POST",
+        body: params,
+        flashError: true,
+      }),
+    }),
+    getSubProduct: build.query<any, { id: string }>({
+      query: (params: { id: string }) => ({
+        url: endpointProduct.GET_SUBPRODUCT.replace("{id}", params?.id),
+        method: "GET",
+        flashError: true,
+      }),
+    }),
+    deleteProduct: build.mutation<any, { id: string }>({
+      query: (params: { id: string }) => ({
+        url: endpointProduct.DELETE_PRODUCT.replace("{id}", params?.id),
+        method: "POST",
+        body: params,
+        flashError: true,
+      }),
+    }),
+    deleteSubProduct: build.mutation<any, { id: string }>({
+      query: (params: { id: string }) => ({
+        url: endpointProduct.DELETE_SUBPRODUCT.replace("{id}", params?.id),
+        method: "POST",
+        body: params,
+        flashError: true,
+      }),
+    }),
+    fillterProduct: build.mutation<
+      any,
+      {
+        filter: {
+          priceRange: {
+            minPrice: number;
+            maxPrice: number;
+          };
+          color: string;
+          sizes: string;
+        };
+        skip: number;
+        pageIndex: number;
+        pageSize: number;
+        sortField: string;
+        asc: boolean;
+      }
+    >({
+      query: (body: {
+        filter: {
+          priceRange: {
+            minPrice: number;
+            maxPrice: number;
+          };
+          color: string;
+          sizes: string;
+        };
+        skip: number;
+        pageIndex: number;
+        pageSize: number;
+        sortField: string;
+        asc: boolean;
+      }) => ({
+        url: endpointProduct.FILLTER_PRODUCT,
+        method: "POST",
+        body: body,
+        flashError: true,
+      }),
+    }),
   }),
 });
 
@@ -73,4 +172,9 @@ export const {
   useGetProductQuery,
   useAddProductMutation,
   useGetAllSubProductQuery,
+  useAddSubProductMutation,
+  useGetSubProductQuery,
+  useDeleteProductMutation,
+  useDeleteSubProductMutation,
+  useFillterProductMutation,
 } = authAPI;

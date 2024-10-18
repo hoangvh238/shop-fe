@@ -4,14 +4,31 @@ import { useMediaQuery } from "usehooks-ts";
 import { Icon } from "@iconify/react";
 import { Button, ScrollShadow, Spacer, Tooltip } from "@nextui-org/react";
 import Image from "next/image";
+import { getCookie } from "cookies-next";
+import { usePathname } from "next/navigation";
+import React from "react";
+import { useRouter } from "next/navigation";
 
 import Header from "./Header";
 
 import Sidebar from "@/components/core/common/sidebar";
 import { sidebarItems } from "@/helpers/data/sidebar-items";
 import { cn } from "@/utils/cn";
-
+import { constants } from "@/settings";
 function DashboardLayout({ children }: { children: React.ReactElement }) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    const getAuth = async () => {
+      const admin = JSON.parse(getCookie(constants.USER_INFO) ?? `false`);
+
+      if (!admin) router.push(`/sign-in?redirect=${pathname}`);
+    };
+
+    getAuth();
+  }, []);
+
   const isCompact = useMediaQuery("(max-width: 768px)");
 
   return (
@@ -36,11 +53,11 @@ function DashboardLayout({ children }: { children: React.ReactElement }) {
           <div className="flex h-8 items-center justify-center rounded-full bg-primary">
             {/* <AcmeIcon className="text-background" /> */}
             <Image
-              src="/logo.png"
               alt=""
-              width={32}
-              height={16}
               className="h-full w-full"
+              height={16}
+              src="/logo.png"
+              width={32}
             />
           </div>
           {/* <span
