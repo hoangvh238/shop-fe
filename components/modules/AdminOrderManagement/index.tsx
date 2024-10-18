@@ -16,6 +16,10 @@ import {
   Selection,
   SortDescriptor,
   Tooltip,
+  DropdownItem,
+  Dropdown,
+  DropdownMenu,
+  DropdownTrigger,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next-nprogress-bar";
@@ -30,8 +34,12 @@ import {
 import useTableQueries from "@/hooks/useTableQueries";
 import ConfirmationModal from "@/components/core/common/confirmation-modal";
 import Opener from "@/components/core/common/opener";
-import { useGetAllOrderMutation } from "@/store/queries/ordermanagement";
+import {
+  useChangeStatusMutation,
+  useGetAllOrderMutation,
+} from "@/store/queries/ordermanagement";
 import { enums } from "@/settings";
+import Toast from "@/components/core/common/toast-item";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
@@ -61,6 +69,10 @@ const columns = [
     name: "SDT",
     uid: "recipientPhone",
   },
+  {
+    name: "PHƯƠNG THỨC THANH TOÁN",
+    uid: "transactionType",
+  },
   { name: "VẬN CHUYỂN", uid: "orderStatus" },
   { name: "THANH TOÁN", uid: "transactionStatus" },
   { name: "ACTIONS", uid: "actions" },
@@ -74,16 +86,91 @@ const CellContent = ({
   columnKey: React.Key;
 }) => {
   const router = useRouter();
-
-  const [selectedKeys] = React.useState<Selection>(new Set(["text"]));
+  const [changeStatus] = useChangeStatusMutation();
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
+    new Set([item?.transaction?.status]),
+  );
   const selectedValue = React.useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
     [selectedKeys],
+  );
+  const [selectedOrderStatus, setSelectedOrderStatus] =
+    React.useState<Selection>(new Set([item?.orderStatus]));
+
+  const selectedValueOrderStatus = React.useMemo(
+    () => Array.from(selectedOrderStatus).join(", ").replaceAll("_", " "),
+    [selectedOrderStatus],
   );
 
   const renderCell = React.useCallback(
     (user: any, columnKey: React.Key) => {
       const cellValue = user[columnKey as keyof User];
+      const handleChangeTransantiontatus = (e: Selection) => {
+        const value = Array.from(e);
+
+        setSelectedKeys(e);
+        Toast(
+          changeStatus,
+          {
+            orderCode: user?.orderCode,
+            status: value[0],
+          },
+          "Đổi trạng thái thanh toán",
+        );
+      };
+      const handleChangeOrderStatus = (e: Selection) => {
+        const value = Array.from(e);
+
+        setSelectedOrderStatus(e);
+        Toast(
+          changeStatus,
+          {
+            orderCode: user?.orderCode,
+            status: value[0],
+          },
+          "Đổi trạng thái vận chuyển",
+        );
+      };
+      const orderStatus = () => {
+        switch (selectedValueOrderStatus) {
+          case enums.OrderStatus.Pending:
+            return "warning";
+          case enums.OrderStatus.Confirmed:
+            return "primary";
+          case enums.OrderStatus.Shipped:
+            return "secondary";
+          case enums.OrderStatus.Delivered:
+            return "success";
+          case enums.OrderStatus.Canceled:
+            return "danger";
+          default:
+            return "danger";
+        }
+      };
+      const transantionStatus = () => {
+        switch (user?.transaction?.status) {
+          case enums.TransactionStastus.Pending:
+            return "warning";
+          case enums.TransactionStastus.Success:
+            return "success";
+          case enums.TransactionStastus.Failed:
+            return "danger";
+          default:
+            return "danger";
+        }
+      };
+      const selectedValueStatus = () => {
+        switch (selectedValue) {
+          case enums.TransactionStastus.Pending:
+            return "warning";
+          case enums.TransactionStastus.Success:
+            return "success";
+          case enums.TransactionStastus.Failed:
+            return "danger";
+          default:
+            return "danger";
+        }
+      };
 
       switch (columnKey) {
         case "id":
@@ -122,68 +209,128 @@ const CellContent = ({
               {user.recipientPhone}
             </p>
           );
+        case "transactionType":
+          return (
+            <p className="text-bold text-small capitalize">
+              {user?.transaction?.paymentMethod}
+            </p>
+          );
         case "orderStatus":
-          switch (user?.orderStatus) {
-            case enums.OrderStatus.Pending:
-              return (
-                <Chip className="min-w-28 capitalize" color="warning">
+          return (
+            <Dropdown>
+              <DropdownTrigger>
+                <Chip className="capitalize" color={orderStatus()}>
+                  {
+                    enums.OrderStatusTranslate[
+                      selectedValueOrderStatus as keyof typeof enums.OrderStatusTranslate
+                    ]
+                  }
+                </Chip>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Single selection example"
+                selectedKeys={selectedOrderStatus}
+                selectionMode="single"
+                variant="flat"
+                onSelectionChange={handleChangeOrderStatus}
+              >
+                <DropdownItem
+                  key={enums.OrderStatus.Pending}
+                  className="text-warning"
+                >
                   Đang xử lí
-                </Chip>
-              );
-            case enums.OrderStatus.Confirmed:
-              return (
-                <Chip className="min-w-28 capitalize" color="primary">
-                  Đã xác thực
-                </Chip>
-              );
-            case enums.OrderStatus.Shipped:
-              return (
-                <Chip className="min-w-28 capitalize" color="secondary">
-                  Đang giao hàng
-                </Chip>
-              );
-            case enums.OrderStatus.Delivered:
-              return (
-                <Chip className="min-w-28 capitalize" color="success">
+                </DropdownItem>
+                <DropdownItem
+                  key={enums.OrderStatus.Confirmed}
+                  className="text-primary"
+                >
+                  Đã xác nhận
+                </DropdownItem>
+                <DropdownItem
+                  key={enums.OrderStatus.Shipped}
+                  className="text-secondary"
+                >
+                  Đang vận chuyển
+                </DropdownItem>
+                <DropdownItem
+                  key={enums.OrderStatus.Delivered}
+                  className="text-success"
+                >
                   Đã giao hàng
-                </Chip>
-              );
-            case enums.OrderStatus.Canceled:
-              return (
-                <Chip className="min-w-28 capitalize" color="danger">
-                  Đã hủy
-                </Chip>
-              );
-            default:
-              return (
-                <Chip className="min-w-28 capitalize" color="danger">
-                  Không rõ
-                </Chip>
-              );
-          }
+                </DropdownItem>
+                <DropdownItem
+                  key={enums.OrderStatus.Canceled}
+                  className="text-danger"
+                >
+                  Đang hủy
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          );
         case "transactionStatus":
-          switch (user?.transaction?.status) {
-            case enums.TransactionStastus.Pending:
+          switch (user?.transaction?.paymentMethod) {
+            case enums.PaymentMethod.OnlinePayment:
               return (
-                <Chip className="min-w-28 capitalize" color="warning">
-                  Đang xử lí
+                <Chip
+                  className="min-w-28 capitalize"
+                  color={transantionStatus()}
+                >
+                  {
+                    enums.TransactionStastusTranslate[
+                    user?.transaction
+                      ?.status as keyof typeof enums.TransactionStastusTranslate
+                    ]
+                  }
                 </Chip>
               );
-            case enums.TransactionStastus.Success:
+            case enums.PaymentMethod.CashOnDelivery:
               return (
-                <Chip className="min-w-28 capitalize" color="success">
-                  Thành công
-                </Chip>
-              );
-            case enums.TransactionStastus.Failed:
-              return (
-                <Chip className="min-w-28 capitalize" color="danger">
-                  Thất bại
-                </Chip>
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Chip className="capitalize" color={selectedValueStatus()}>
+                      {
+                        enums.TransactionStastusTranslate[
+                        selectedValue as keyof typeof enums.TransactionStastusTranslate
+                        ]
+                      }
+                    </Chip>
+                  </DropdownTrigger>
+                  <DropdownMenu
+                    disallowEmptySelection
+                    aria-label="Single selection example"
+                    selectedKeys={selectedKeys}
+                    selectionMode="single"
+                    variant="flat"
+                    onSelectionChange={handleChangeTransantiontatus}
+                  >
+                    <DropdownItem
+                      key={enums.TransactionStastus.Pending}
+                      className="text-primary"
+                    >
+                      Đang xử lí
+                    </DropdownItem>
+                    <DropdownItem
+                      key={enums.TransactionStastus.Success}
+                      className="text-success"
+                    >
+                      Thành công
+                    </DropdownItem>
+                    <DropdownItem
+                      key={enums.TransactionStastus.Failed}
+                      className="text-danger"
+                    >
+                      Thất bại
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               );
             default:
               return (
-                <Chip className="min-w-28 capitalize" color="danger">
+                <Chip
+                  className="min-w-28 capitalize"
+                  color={transantionStatus()}
+                >
                   Không rõ
                 </Chip>
               );
@@ -227,7 +374,7 @@ const CellContent = ({
           return cellValue;
       }
     },
-    [selectedValue],
+    [selectedValue, selectedValueOrderStatus],
   );
 
   return renderCell(item, columnKey);

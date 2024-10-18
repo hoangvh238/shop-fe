@@ -392,7 +392,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               Thêm vào giỏ hàng
             </Button>
             <a
-              href="http://localhost:3001/editor/123"
+              href={`http://localhost:3001/editor/${selectItem?.id}`}
               rel="noreferrer"
               target="_blank"
             >

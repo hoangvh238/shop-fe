@@ -4,7 +4,7 @@ import React from "react";
 import ProductListItem from "@/components/core/common/product-list-item";
 import { enums } from "@/settings";
 import { useGetAllProductMutation } from "@/store/queries/productManagement";
-import { ProductItem } from "@/types/item-type";
+import { ProductCustom } from "@/types/item-type";
 import { products as initialProduct } from "@/helpers/data/product";
 
 function Trending() {
@@ -51,7 +51,7 @@ function Trending() {
       </p>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        {trendingItem.map((product: ProductItem, index: number) => (
+        {trendingItem.map((product: ProductCustom, index: number) => (
           <ProductListItem
             key={isSuccess ? product.id : index}
             isLoading={!isSuccess}

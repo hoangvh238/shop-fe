@@ -29,6 +29,20 @@ export const authAPI = baseApi.injectEndpoints({
         flashError: true,
       }),
     }),
+    changeStatus: build.mutation<
+      any,
+      {
+        orderCode: string;
+        status: string;
+      }
+    >({
+      query: (body: { orderCode: string; status: string }) => ({
+        url: endpointOrder.CHANGE_STATUS,
+        method: "POST",
+        body: body,
+        flashError: true,
+      }),
+    }),
     addOrder: build.mutation<
       any,
       {
@@ -83,4 +97,5 @@ export const {
   useAddOrderMutation,
   useGetOrderQuery,
   useGetOrderDetailQuery,
+  useChangeStatusMutation,
 } = authAPI;

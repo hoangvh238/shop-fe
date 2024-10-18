@@ -59,6 +59,7 @@ const endpointProvider = {
 
 const endpointOrder = {
   GET_ALL_ORDER: `${prefixUser}/Order/get-basic`,
+  CHANGE_STATUS: `${prefixUser}/Order/change-status`,
   GET_DETAIL_ORDER: `${prefixUser}/Order/get-order-by-code`,
   GET_ORDER: `${prefixUser}/Order/{id}`,
   ADD_NEW_ORDER: `${prefixUser}/Transaction`,
