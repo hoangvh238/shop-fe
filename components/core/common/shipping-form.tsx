@@ -317,11 +317,13 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
               value: selectedProvince ? "text-black-500" : "",
             }}
             items={provinces}
+            labelPlacement="outside"
             label="Tỉnh/Thành phố"
             placeholder="Chọn Tỉnh/Thành phố"
             value={selectedProvince?.name}
             variant={variant}
             onChange={handleProvinceChange}
+            isRequired
           >
             {(province: Province) => (
               <SelectItem key={province?.id} value={province?.id}>
@@ -335,9 +337,11 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
               value: selectedDistrict ? "text-black-500" : "",
             }}
             items={districts}
+            labelPlacement="outside"
             label="Huyện/Quận"
             placeholder="Chọn Huyện/Quận"
             value={selectedDistrict?.name}
+            isRequired
             variant={variant}
             onChange={handleDistrictChange}
           >
@@ -358,7 +362,9 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
             label="Xã"
             placeholder="Chọn Xã"
             value={selectedWard?.name}
+            isRequired
             variant={variant}
+            labelPlacement="outside"
             onChange={handleWardChange}
           >
             {(wards: Ward) => (
