@@ -95,7 +95,7 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
                 </h3>
                 <p className="text-small text-default-500">{provider?.name}</p>
               </div>
-              <div className="group relative">
+              <div className="group relative h-[255px] w-full">
                 <Image
                   alt={name}
                   className={cn(
