@@ -1,7 +1,6 @@
 import { Spacer } from "@nextui-org/react";
 import React from "react";
 
-import RelatedProduct from "./RelatedProduct";
 import Link from "./Link";
 
 import ProductViewInfo from "@/components/core/common/product-view-item";
@@ -12,8 +11,8 @@ function ProductDetailModule({ product }: { product: any }) {
         <Link name={product?.name} />
         <Spacer y={5} />
         <ProductViewInfo {...product} />
-        <Spacer y={5} />
-        <RelatedProduct />
+        {/* <Spacer y={5} /> */}
+        {/* <RelatedProduct /> */}
       </div>
     </>
   );

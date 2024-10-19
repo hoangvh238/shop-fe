@@ -3,7 +3,6 @@
 import React from "react";
 import {
   Button,
-  Image,
   Input,
   Link,
   RadioGroup,
@@ -19,6 +18,7 @@ import Toast from "./toast-item";
 import { cn } from "@/utils/cn";
 import { useAddCardMutation } from "@/store/queries/cartManagement";
 import webLocalStorage from "@/utils/webLocalStorage";
+import Image from "next/image";
 
 export type ProductViewItemColor = {
   name: string;
@@ -181,7 +181,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
       <div
         ref={ref}
         className={cn(
-          "relative flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8",
+          "relative flex flex-col gap-4 pb-40 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8",
           className,
         )}
         {...props}
@@ -209,9 +209,10 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
           {/* Main Image */}
           <Image
             alt={name}
-            className="aspect-video h-full max-w-xl bg-cover"
-            radius="lg"
+            className="aspect-video h-full w-full max-w-xl rounded-xl bg-cover"
             src={selectedImage}
+            width={900}
+            height={900}
           />
           {/* Image Gallery */}
           <ScrollShadow
@@ -226,13 +227,11 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
                 onClick={() => setSelectedImage(image)}
               >
                 <Image
-                  removeWrapper
                   alt={name}
-                  classNames={{
-                    img: "h-full w-full",
-                  }}
-                  radius="lg"
                   src={image}
+                  width={900}
+                  height={900}
+                  className="h-full w-full rounded-medium object-cover"
                 />
               </button>
             ))}
