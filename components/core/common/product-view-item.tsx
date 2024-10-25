@@ -2,21 +2,30 @@
 
 import React from "react";
 import {
+  Modal, 
+  ModalContent, 
+  ModalHeader, 
+  ModalBody, 
+  useDisclosure,
   Button,
   Input,
   Link,
   RadioGroup,
   ScrollShadow,
 } from "@nextui-org/react";
+import {} from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
+import { ARIcon } from "./icons";
+
 
 import ColorRadioItem from "./color-radio-item";
 import TagGroupRadioItem from "./tag-group-radio-item";
 import Toast from "./toast-item";
 
 import { cn } from "@/utils/cn";
+import CameraKitApp from "@/components/modules/CameraKit/CameraKitApp";
 import { useAddCardMutation } from "@/store/queries/cartManagement";
 import webLocalStorage from "@/utils/webLocalStorage";
 import { useSeftEditMutation } from "@/store/queries/productManagement";
@@ -84,6 +93,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
     const [seftEdit] = useSeftEditMutation();
     const [redirectNewTab] = useNewTabRedirect();
     const pathname = usePathname();
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
     const [addCart, { isLoading }] = useAddCardMutation();
 
@@ -260,7 +270,24 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
 
         {/* Product Info */}
         <div className="flex flex-col">
-          <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
+        <div className="flex flex-row justify-between">
+            <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
+            <Modal size="4xl" isOpen={isOpen} onOpenChange={onOpenChange}>
+              <ModalContent className="rounded-xl" >
+                {(onClose) => (
+                  <>
+                    <ModalHeader className="flex flex-col gap-1">Thử áo quần với công nghệ AR</ModalHeader>
+                    <ModalBody>
+                      {isOpen && <CameraKitApp />}
+                    </ModalBody>
+                  </>
+                )}
+              </ModalContent>
+            </Modal>
+            <Button onPress={onOpen}>
+              <ARIcon></ARIcon>
+            </Button>
+          </div>
           <h2 className="sr-only">Product information</h2>
           {/* <div className="my-2 flex items-center gap-2">
             <RatingRadioGroup hideStarsText size="sm" value={`${rating}`} />

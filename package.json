@@ -28,6 +28,7 @@
 		"@reduxjs/toolkit": "^2.2.7",
 		"@uploadthing/react": "^7.0.3",
 		"axios": "^1.7.7",
+		"@snap/camera-kit": "^0.22.0",
 		"clsx": "^2.1.1",
 		"cookies-next": "^4.2.1",
 		"dayjs": "^1.11.13",
