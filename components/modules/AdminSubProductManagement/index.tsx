@@ -129,18 +129,19 @@ const CellContent = ({
             <Dropdown>
               <DropdownTrigger>
                 {selectedValue === "available" ? (
-                  <Chip className="capitalize" color="success">
-                    Đang bán
-                  </Chip>
-                ) : (
                   <Chip className="capitalize" color="danger">
                     Dừng bán
+                  </Chip>
+                ) : (
+                  <Chip className="capitalize" color="success">
+                    Đang bán
                   </Chip>
                 )}
               </DropdownTrigger>
               <DropdownMenu
                 disallowEmptySelection
                 aria-label="Single selection example"
+                defaultSelectedKeys="available"
                 selectedKeys={selectedKeys}
                 selectionMode="single"
                 variant="flat"

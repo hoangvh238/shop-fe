@@ -130,7 +130,7 @@ const CellContent = ({
                   style={{
                     backgroundColor:
                       enums.Color[
-                        subProduct.color.toUpperCase() as keyof typeof enums.Color
+                      subProduct.color.toUpperCase() as keyof typeof enums.Color
                       ],
                     left: index * 10,
                   }}
@@ -142,7 +142,7 @@ const CellContent = ({
           return (
             <Dropdown>
               <DropdownTrigger>
-                {selectedValue === "available" ? (
+                {selectedValue !== "available" ? (
                   <Chip className="capitalize" color="success">
                     Đang bán
                   </Chip>
@@ -155,6 +155,7 @@ const CellContent = ({
               <DropdownMenu
                 disallowEmptySelection
                 aria-label="Single selection example"
+                defaultSelectedKeys="available"
                 selectedKeys={selectedKeys}
                 selectionMode="single"
                 variant="flat"
