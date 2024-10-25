@@ -1,13 +1,9 @@
+import { TypeImageUpload } from "@/components/core/common/upload-image";
 import { constants } from "@/settings";
-
-type Format = {
-  url: string;
-  size: number;
-};
 
 export const UploadImage = async (files: any) => {
   const formData = new FormData();
-  let result: Format[] = [];
+  let result: TypeImageUpload["inforUpload"] = [];
 
   formData.append("upload_preset", "goal_finder");
 

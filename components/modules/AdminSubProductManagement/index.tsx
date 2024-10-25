@@ -18,14 +18,21 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
 } from "@nextui-org/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next-nprogress-bar";
 import { Plus } from "lucide-react";
 import { Icon } from "@iconify/react";
+import { SwiperSlide, Swiper } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import Image from "next/image";
 
 import { users, fakeUsers } from "@/helpers/data/table";
-import { DeleteIcon, EditIcon } from "@/components/core/common/icons";
+import { DeleteIcon, EditIcon, EyeIcon } from "@/components/core/common/icons";
 import useTableQueries from "@/hooks/useTableQueries";
 import ConfirmationModal from "@/components/core/common/confirmation-modal";
 import Opener from "@/components/core/common/opener";
@@ -35,6 +42,9 @@ import {
   useGetAllSubProductQuery,
 } from "@/store/queries/productManagement";
 import Toast from "@/components/core/common/toast-item";
+
+import "swiper/css";
+import "swiper/css/navigation";
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
 
@@ -146,6 +156,50 @@ const CellContent = ({
         case "actions":
           return (
             <div className="relative flex items-center justify-center gap-2">
+              <Opener
+                renderContent={({ close }) => (
+                  <Modal isOpen={true} onClose={close}>
+                    <ModalContent className="p-6">
+                      {(onClose) => (
+                        <>
+                          <ModalHeader className="flex flex-col gap-1">
+                            Ảnh của mẫu
+                          </ModalHeader>
+                          <ModalBody>
+                            <Swiper
+                              className="mySwiper"
+                              modules={[Navigation]}
+                              navigation={true}
+                            >
+                              {user?.images?.map((image: string) => (
+                                <SwiperSlide key={image} className="w-[500px]">
+                                  <Image
+                                    alt="ảnh của mẫu"
+                                    className="object-cover"
+                                    height={500}
+                                    src={image}
+                                    width={500}
+                                  />
+                                </SwiperSlide>
+                              ))}
+                            </Swiper>
+                          </ModalBody>
+                        </>
+                      )}
+                    </ModalContent>
+                  </Modal>
+                )}
+                renderOpener={({ open }) => (
+                  <Tooltip content="Xem ảnh của mẫu">
+                    <button
+                      className="cursor-pointer text-lg text-default-400 active:opacity-50"
+                      onClick={open}
+                    >
+                      <EyeIcon />
+                    </button>
+                  </Tooltip>
+                )}
+              />
               <Tooltip content="Chỉnh sửa">
                 <button
                   className="cursor-pointer text-lg text-default-400 active:opacity-50"

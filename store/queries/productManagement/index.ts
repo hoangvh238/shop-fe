@@ -108,7 +108,14 @@ export const authAPI = baseApi.injectEndpoints({
         flashError: true,
       }),
     }),
-    deleteProduct: build.mutation<any, { id: string }>({
+    seftEdit: build.mutation<any, { id?: string }>({
+      query: (params: { id?: string }) => ({
+        url: endpointProduct.SEFT_EDIT.replace("{id}", params?.id ?? ""),
+        method: "GET",
+        flashError: true,
+      }),
+    }),
+    deleteProduct: build.mutation<any, { id?: string }>({
       query: (params: { id: string }) => ({
         url: endpointProduct.DELETE_PRODUCT.replace("{id}", params?.id),
         method: "POST",
@@ -117,8 +124,11 @@ export const authAPI = baseApi.injectEndpoints({
       }),
     }),
     deleteSubProduct: build.mutation<any, { id: string }>({
-      query: (params: { id: string }) => ({
-        url: endpointProduct.DELETE_SUBPRODUCT.replace("{id}", params?.id),
+      query: (params: { id?: string }) => ({
+        url: endpointProduct.DELETE_SUBPRODUCT.replace(
+          "{id}",
+          params?.id ?? "",
+        ),
         method: "POST",
         body: params,
         flashError: true,
@@ -177,4 +187,5 @@ export const {
   useDeleteProductMutation,
   useDeleteSubProductMutation,
   useFillterProductMutation,
+  useSeftEditMutation,
 } = authAPI;

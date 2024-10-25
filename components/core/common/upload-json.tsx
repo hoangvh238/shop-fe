@@ -1,7 +1,11 @@
 import React, { useState, useCallback } from "react";
-import { Card, CardBody, Button } from "@nextui-org/react";
+import { Card, CardBody, Button, CardHeader } from "@nextui-org/react";
 
-export default function JsonUpload() {
+export type TypeJsonUpload = {
+  setInforUpload: (inforUpload: string) => void;
+  label: string;
+};
+export default function JsonUpload({ setInforUpload, label }: TypeJsonUpload) {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
@@ -30,18 +34,34 @@ export default function JsonUpload() {
   }, []);
 
   React.useEffect(() => {
-    console.log("file", file);
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const contents = e?.target?.result ?? "{}";
+
+        setInforUpload(contents as string);
+      };
+
+      // Read the file as text
+      reader.readAsText(file);
+    }
   }, [file]);
 
   return (
     <Card
-      className={`mx-auto w-full p-8 shadow-none`}
+      className={`mx-auto w-full shadow-none`}
       onDragLeave={onDragLeave}
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
+      {label && (
+        <CardHeader className="p-0 pb-2 text-sm font-normal">
+          {label}
+        </CardHeader>
+      )}
       <CardBody
-        className={`flex flex-col items-center gap-4 rounded-md border-2 border-dashed p-6 shadow-none ${isDragging ? "border-primary" : ""}`}
+        className={`flex flex-col items-center gap-4 rounded-md border-2 border-dashed p-8 shadow-none ${isDragging ? "border-primary" : ""}`}
       >
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-default-100">
           <CloudUploadIcon className="h-8 w-8 text-default-500" />

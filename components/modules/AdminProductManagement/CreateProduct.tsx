@@ -8,7 +8,9 @@ import { Button } from "@nextui-org/button";
 import { toast, Toaster } from "sonner";
 
 import { useAddProductMutation } from "@/store/queries/productManagement";
-import UploadImage from "@/components/core/common/upload-image";
+import UploadImage, {
+  TypeImageUpload,
+} from "@/components/core/common/upload-image";
 
 export const animals = [
   { key: "cat", label: "Cat" },
@@ -46,7 +48,9 @@ const initialForm = {
 function CreateProduct() {
   const router = useRouter();
   const [form, setForm] = React.useState(initialForm);
-  const [inforUpload, setInforUpload] = React.useState<any[]>([]);
+  const [inforUpload, setInforUpload] = React.useState<
+    TypeImageUpload["inforUpload"]
+  >([]);
 
   const [addProduct] = useAddProductMutation();
 
@@ -54,7 +58,7 @@ function CreateProduct() {
     handleForm("images", inforUpload);
   }, [inforUpload]);
 
-  const handleForm = (key: string, value: string | string[]) => {
+  const handleForm = (key: string, value: any) => {
     setForm({ ...form, [key]: value });
   };
 
@@ -129,6 +133,7 @@ function CreateProduct() {
         />
         <UploadImage
           inforUpload={inforUpload}
+          label="Ảnh của sản phẩm"
           setInforUpload={setInforUpload}
         />
         <Button

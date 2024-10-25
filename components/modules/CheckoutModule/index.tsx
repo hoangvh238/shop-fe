@@ -97,7 +97,6 @@ export default function CheckoutModule() {
     selectFromResult: ({ data, isSuccess, error }) => {
       if (error) {
         const newData = webLocalStorage.get("cart");
-
         return {
           cartItems: newData ?? [],
           isSuccess,
@@ -111,6 +110,8 @@ export default function CheckoutModule() {
     },
     refetchOnMountOrArgChange: true,
   });
+
+  console.log("first", cartItems);
 
   const variants = {
     enter: (direction: number) => ({
@@ -206,7 +207,7 @@ export default function CheckoutModule() {
 
   const isDisabledButtonGoNext = React.useMemo(() => {
     return (
-      (page === 0 && totalPrice === 0) ||
+      (page === 0 && ordering.inputItem.length === 0) ||
       (page === 1 && !checkFields(ordering.inputOrder))
     );
   }, [page, ordering]);

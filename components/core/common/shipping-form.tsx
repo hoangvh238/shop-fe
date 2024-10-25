@@ -3,7 +3,13 @@
 import type { InputProps } from "@nextui-org/react";
 
 import React from "react";
-import { Button, Divider, Input, Select, SelectItem } from "@nextui-org/react";
+import {
+  Autocomplete,
+  AutocompleteItem,
+  Button,
+  Divider,
+  Input,
+} from "@nextui-org/react";
 import axios from "axios";
 
 import { cn } from "@/utils/cn";
@@ -224,7 +230,7 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
     }, [selectedWard]);
 
     // Xử lý khi chọn tỉnh/thành phố
-    const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleProvinceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newSelected =
         provinces.find((province) => province?.id === e.target.value) ??
         initialAddress;
@@ -234,7 +240,7 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
     };
 
     // Xử lý khi chọn huyện/quận
-    const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleDistrictChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newSelected =
         districts.find((district) => district?.id === e.target.value) ??
         initialAddress;
@@ -244,7 +250,7 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
     };
 
     // Xử lý khi chọn xã/phường
-    const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleWardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newSelected =
         wards.find((ward) => ward?.id == e.target.value) ?? initialAddress;
 
@@ -311,62 +317,71 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
           />
         </div>
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
-          <Select
+          <Autocomplete
             className="max-w-xs"
             classNames={{
-              value: selectedProvince ? "text-black-500" : "",
+              base: selectedProvince ? "text-black-500" : "",
             }}
-            items={provinces}
+            defaultItems={provinces}
             label="Tỉnh/Thành phố"
+            listboxProps={{
+              emptyContent: "Không tìm thấy Tỉnh/Thành phố nào.",
+            }}
             placeholder="Chọn Tỉnh/Thành phố"
             value={selectedProvince?.name}
             variant={variant}
             onChange={handleProvinceChange}
           >
             {(province: Province) => (
-              <SelectItem key={province?.id} value={province?.id}>
+              <AutocompleteItem key={province?.id} value={province?.id}>
                 {province?.name}
-              </SelectItem>
+              </AutocompleteItem>
             )}
-          </Select>
-          <Select
+          </Autocomplete>
+          <Autocomplete
             className="max-w-xs"
             classNames={{
-              value: selectedDistrict ? "text-black-500" : "",
+              base: selectedDistrict ? "text-black-500" : "",
             }}
             items={districts}
             label="Huyện/Quận"
+            listboxProps={{
+              emptyContent: "Không tìm thấy Quận/huyện nào.",
+            }}
             placeholder="Chọn Huyện/Quận"
             value={selectedDistrict?.name}
             variant={variant}
             onChange={handleDistrictChange}
           >
-            {(district: District) => (
-              <SelectItem key={district?.id} value={district?.id}>
+            {(district: Province) => (
+              <AutocompleteItem key={district?.id} value={district?.id}>
                 {district?.name}
-              </SelectItem>
+              </AutocompleteItem>
             )}
-          </Select>
+          </Autocomplete>
         </div>
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
-          <Select
+          <Autocomplete
             className="max-w-xs"
             classNames={{
-              value: selectedWard ? "text-black-500" : "",
+              base: selectedWard ? "text-black-500" : "",
             }}
             items={wards}
             label="Xã"
+            listboxProps={{
+              emptyContent: "Không tìm thấy phường/xã nào.",
+            }}
             placeholder="Chọn Xã"
             value={selectedWard?.name}
             variant={variant}
             onChange={handleWardChange}
           >
-            {(wards: Ward) => (
-              <SelectItem key={wards?.id} value={wards?.id}>
-                {wards?.name}
-              </SelectItem>
+            {(ward: Province) => (
+              <AutocompleteItem key={ward?.id} value={ward?.id}>
+                {ward?.name}
+              </AutocompleteItem>
             )}
-          </Select>
+          </Autocomplete>
           <Input
             isRequired
             id="phoneNumber"

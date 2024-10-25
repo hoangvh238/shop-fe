@@ -47,9 +47,11 @@ const endpointProduct = {
   ADD_NEW_PRODUCT: `${prefixUser}/TemplateCanvas`,
   ADD_NEW_SUBPRODUCT: `${prefixUser}/CustomCanvas`,
   GET_ALL_SUBPRODUCT: `${constants.API_SERVER}${prefixUser}/TemplateCanvas/products/{id}`,
+  GET_CUSTOM_PRODUCT: `${constants.API_SERVER}${prefixUser}/CustomCanvas/{id}`,
   DELETE_PRODUCT: `${prefixUser}/CustomCanvas/delete/{id}`,
   DELETE_SUBPRODUCT: `${prefixUser}/TemplateCanvas/delete/{id}`,
   FILLTER_PRODUCT: `${prefixUser}/TemplateCanvas/get-all-fillter`,
+  SEFT_EDIT: `${prefixUser}/CustomCanvas/selft-edit/{id}`,
 };
 
 const endpointProvider = {

@@ -8,7 +8,7 @@ const getProductByID = async (id: string) => {
   let config = {
     method: "get",
     maxBodyLength: Infinity,
-    url: endpointProduct.GET_ALL_SUBPRODUCT.replace("{id}", id),
+    url: endpointProduct.GET_CUSTOM_PRODUCT.replace("{id}", id),
     headers: {
       "X-API-Key": "{{token}}",
     },
@@ -29,16 +29,21 @@ export default async function ProductDetailPage({
   params: { id: string };
 }) {
   const data: any = await getProductByID(id);
+
   const product = {
-    items: data?.data?.result?.products ?? [],
+    items: [{ ...data?.data?.result }],
     name: data?.data?.result?.name ?? "",
-    colors: data?.data?.result?.colors
-      .split(",")
-      .map((color: keyof typeof enums.Color) => ({
-        name: color,
-        hex: enums.Color[color.toUpperCase() as keyof typeof enums.Color],
-      })),
+    colors: [
+      {
+        name: data?.data?.result?.color,
+        hex: enums.Color[
+          data?.data?.result?.color.toUpperCase() as keyof typeof enums.Color
+        ],
+      },
+    ],
   };
+
+  console.log("product", product);
 
   return <ProductDetailModule product={product} />;
 }

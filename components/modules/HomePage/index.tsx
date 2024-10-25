@@ -4,8 +4,6 @@ import Banner from "./Banner";
 import Trending from "./Trending";
 
 function HomePageModule() {
-
-  
   return (
     <div className="flex w-full flex-col">
       <Banner />

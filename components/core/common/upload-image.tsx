@@ -8,14 +8,33 @@ import ImageGallery from "./image-gallery";
 
 import { UploadImage } from "@/settings/uploadImage";
 
-export default function Home({ inforUpload, setInforUpload }: any) {
+export type TypeImageUpload = {
+  inforUpload: {
+    size: string;
+    url: string;
+  }[];
+  setInforUpload: (
+    inforUpload: {
+      size: string;
+      url: string;
+    }[],
+  ) => void;
+  label: string;
+};
+
+export default function Home({
+  inforUpload,
+  setInforUpload,
+  label,
+}: TypeImageUpload) {
   const [draggingOver, setDraggingOver] = useState(false);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: async (files) => {
       const promise = () =>
         new Promise<void>(async (resolve, reject) => {
           try {
-            const infor = await UploadImage(files);
+            const infor: TypeImageUpload["inforUpload"] =
+              await UploadImage(files);
 
             setInforUpload([...inforUpload, ...infor]);
 
@@ -42,9 +61,12 @@ export default function Home({ inforUpload, setInforUpload }: any) {
   };
 
   return (
-    <div className="mx-auto w-full sm:p-6 lg:p-8">
+    <div className="mx-auto w-full">
+      {label && <h1 className="p-0 pb-2 text-sm font-normal">{label}</h1>}
       <Toaster closeButton richColors position="top-right" />
-      <ImageGallery images={inforUpload} setImage={setInforUpload} />
+      {inforUpload.length != 0 && (
+        <ImageGallery images={inforUpload} setImage={setInforUpload} />
+      )}
 
       <div className="flex text-sm text-gray-600">
         <div

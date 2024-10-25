@@ -17,6 +17,7 @@ import {
   useGetSizesQuery,
 } from "@/store/queries/providerManagement";
 import { enums } from "@/settings";
+import UploadJson from "@/components/core/common/upload-json";
 
 const item = {
   sizes: ["S", "M", "L", "XL", "XXL"],
@@ -45,6 +46,7 @@ const AdminCreateSubProduct = ({ idProduct }: { idProduct: string }) => {
 
   const [inforUpload, setInforUpload] = React.useState<any[]>([]);
   const [form, setForm] = React.useState(initialForm);
+  const [uploadJson, setUploadJson] = React.useState<string>("{}");
 
   const [addSubProduct] = useAddSubProductMutation();
 
@@ -112,8 +114,11 @@ const AdminCreateSubProduct = ({ idProduct }: { idProduct: string }) => {
   const handleSubmitForm = () => {
     const newProduct = {
       name: subProduct?.name,
-      content: "{}",
-      images: form.images.map((image: { url: string }) => image?.url),
+      content: uploadJson.trim().length != 0 ? uploadJson : subProduct?.content,
+      images:
+        form.images.length != 0
+          ? form.images.map((image: { url: string }) => image?.url)
+          : subProduct?.images,
       price: form.price,
       color: form.color,
       sizes: form.sizes,
@@ -238,8 +243,10 @@ const AdminCreateSubProduct = ({ idProduct }: { idProduct: string }) => {
             onChange={handleInputPrice}
           />
         </div>
+        <UploadJson label="Json của sản phẩm" setInforUpload={setUploadJson} />
         <UploadImage
           inforUpload={inforUpload}
+          label="Ảnh của sản phẩm"
           setInforUpload={setInforUpload}
         />
         <Button color="primary" onClick={handleSubmitForm}>

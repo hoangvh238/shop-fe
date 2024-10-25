@@ -48,8 +48,6 @@ function SignInModule() {
 
   const router = useRouter();
 
-  console.log("first", urlRedirect);
-
   const handleForm = (value: any, key: string) => {
     setForm({ ...form, [key]: value });
   };

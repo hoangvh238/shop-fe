@@ -41,7 +41,7 @@ const OrderSummaryItem = React.forwardRef<HTMLLIElement, OrderSummaryItemProps>(
           <h4 className="text-small">
             <Link
               className="font-medium text-foreground"
-              href={customCanvas?.id}
+              href={`/product/${customCanvas?.id}`}
               underline="hover"
             >
               {customCanvas?.name || children}

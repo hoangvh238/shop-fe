@@ -10,6 +10,7 @@ import {
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next-nprogress-bar";
+import Image from "next/image";
 
 import ColorRadioItem from "./color-radio-item";
 import TagGroupRadioItem from "./tag-group-radio-item";
@@ -18,7 +19,10 @@ import Toast from "./toast-item";
 import { cn } from "@/utils/cn";
 import { useAddCardMutation } from "@/store/queries/cartManagement";
 import webLocalStorage from "@/utils/webLocalStorage";
-import Image from "next/image";
+import { useSeftEditMutation } from "@/store/queries/productManagement";
+import useNewTabRedirect from "@/hooks/useNewTabRedirect";
+import webStorageClient from "@/utils/webStorageClient";
+import { usePathname } from "next/navigation";
 
 export type ProductViewItemColor = {
   name: string;
@@ -77,6 +81,9 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
     const [quantity, setQuantity] = React.useState<string>("1");
     const [size, setSize] = React.useState("");
     const [handleCart, setHandleCart] = React.useState<"buy" | "cart">("buy");
+    const [seftEdit] = useSeftEditMutation();
+    const [redirectNewTab] = useNewTabRedirect();
+    const pathname = usePathname();
 
     const [addCart, { isLoading }] = useAddCardMutation();
 
@@ -166,6 +173,19 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
       setQuantity(String(Number(quantity) + 1));
     };
 
+    const handleDegisn = async () => {
+      try {
+        const { result } = await seftEdit({ id: selectItem?.id }).unwrap();
+        const token = webStorageClient.getToken();
+
+        redirectNewTab(
+          `http://localhost:3001/editor/${result}?size=${size}&token=${token}`,
+        );
+      } catch (err) {
+        router.push(`/sign-in?redirect=${pathname}`);
+      }
+    };
+
     const valueQuantity: string = React.useMemo(() => {
       const numberQuantity = Number(quantity);
 
@@ -210,9 +230,9 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
           <Image
             alt={name}
             className="aspect-video h-full w-full max-w-xl rounded-xl bg-cover"
+            height={900}
             src={selectedImage}
             width={900}
-            height={900}
           />
           {/* Image Gallery */}
           <ScrollShadow
@@ -228,10 +248,10 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               >
                 <Image
                   alt={name}
+                  className="h-full w-full rounded-medium object-cover"
+                  height={900}
                   src={image}
                   width={900}
-                  height={900}
-                  className="h-full w-full rounded-medium object-cover"
                 />
               </button>
             ))}
@@ -267,10 +287,10 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               wrapper: "gap-2",
             }}
             orientation="horizontal"
-            value={selectItem?.color}
+            value={selectItem?.id}
             onChange={(e) => {
               const newSelectionItem = items.find(
-                (item: Item) => item?.color === e.target.value,
+                (item: Item) => item?.id === e.target.value,
               );
 
               setSize("");
@@ -278,12 +298,12 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
               setSelectedImage(newSelectionItem?.images[0] ?? "");
             }}
           >
-            {colors?.map(({ name, hex }) => (
+            {colors?.map(({ name, hex }, index) => (
               <ColorRadioItem
-                key={name}
+                key={items[index]?.id}
                 color={hex}
                 tooltip={name}
-                value={name}
+                value={items[index]?.id}
               />
             ))}
           </RadioGroup>
@@ -390,22 +410,18 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
             >
               Thêm vào giỏ hàng
             </Button>
-            <a
-              href={`http://localhost:3001/editor/${selectItem?.id}`}
-              rel="noreferrer"
-              target="_blank"
+            <Button
+              fullWidth
+              className="text-medium font-medium"
+              color="primary"
+              isDisabled={!size || !quantity}
+              size="lg"
+              startContent={<Icon icon="solar:pen-2-linear" width={24} />}
+              variant="flat"
+              onClick={handleDegisn}
             >
-              <Button
-                fullWidth
-                className="text-medium font-medium"
-                color="primary"
-                size="lg"
-                startContent={<Icon icon="solar:pen-2-linear" width={24} />}
-                variant="flat"
-              >
-                Tự thiết kế
-              </Button>
-            </a>
+              Tự thiết kế
+            </Button>
             {/* <Button
               isIconOnly
               className="text-default-600"

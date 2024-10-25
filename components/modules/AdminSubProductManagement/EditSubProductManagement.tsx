@@ -18,6 +18,7 @@ import {
 } from "@/store/queries/providerManagement";
 import { enums } from "@/settings";
 import { SubProduct } from "@/types/item-type";
+import UploadJson from "@/components/core/common/upload-json";
 
 const item = {
   sizes: ["S", "M", "L", "XL", "XXL"],
@@ -52,6 +53,7 @@ const AdminEditSubProduct = ({
 
   const [inforUpload, setInforUpload] = React.useState<any[]>([]);
   const [form, setForm] = React.useState(initialForm);
+  const [uploadJson, setUploadJson] = React.useState<string>("{}");
 
   const [addSubProduct] = useAddSubProductMutation();
 
@@ -80,13 +82,16 @@ const AdminEditSubProduct = ({
     {
       selectFromResult: ({ data }) => {
         return {
-          baseColors: data?.result
-            ?.split(",")
-            .map((color: keyof typeof enums.ColorTranslate) => ({
-              label: enums.ColorTranslate[color],
-              value: color,
-              hex: enums.Color[color],
-            })),
+          baseColors: data?.result?.split(",").map((color: string) => ({
+            label:
+              enums.ColorTranslate[
+                color.toUpperCase() as keyof typeof enums.ColorTranslate
+              ],
+            value: color,
+            hex: enums.Color[
+              color.toUpperCase() as keyof typeof enums.ColorTranslate
+            ],
+          })),
         };
       },
     },
@@ -117,8 +122,8 @@ const AdminEditSubProduct = ({
   const handleSubmitForm = () => {
     const newProduct = {
       id: idSubproduct,
-      name: subProduct?.name ?? subProduct.name,
-      content: subProduct.content ?? "{}",
+      name: subProduct?.name,
+      content: uploadJson.length != 0 ? uploadJson : subProduct.content,
       images:
         form.images.length != 0
           ? form.images.map((image: { url: string }) => image?.url)
@@ -248,8 +253,10 @@ const AdminEditSubProduct = ({
             onChange={handleInputPrice}
           />
         </div>
+        <UploadJson label="Json của sản phẩm" setInforUpload={setUploadJson} />
         <UploadImage
           inforUpload={inforUpload}
+          label="Ảnh của sản phẩm"
           setInforUpload={setInforUpload}
         />
         <Button color="primary" onClick={handleSubmitForm}>

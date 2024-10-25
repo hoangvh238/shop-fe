@@ -66,8 +66,13 @@ function EditProduct({ idProduct }: { idProduct: string }) {
   const submitForm = async () => {
     const newProduct = {
       id: idProduct,
-      name: form?.nameProduct ?? product?.name,
-      descriptions: form?.discProduct ?? product?.descriptions,
+      name:
+        form?.nameProduct.trim().length != 0
+          ? form?.nameProduct
+          : product?.name,
+      descriptions: form?.discProduct.trim().length
+        ? form?.discProduct
+        : product?.descriptions,
       images:
         form?.images?.length != 0
           ? form.images.map((image: { url: string }) => image?.url)
@@ -135,6 +140,7 @@ function EditProduct({ idProduct }: { idProduct: string }) {
         />
         <UploadImage
           inforUpload={inforUpload}
+          label="Ảnh của san phẩm"
           setInforUpload={setInforUpload}
         />
         <Button color="primary" isDisabled={isFetching} onClick={submitForm}>

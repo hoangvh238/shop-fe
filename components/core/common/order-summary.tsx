@@ -66,6 +66,8 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
       }
     }, [items]);
 
+    console.log('selectList', selectList)
+
     const products = React.useMemo(() => {
       return items?.map((item) => ({
         ...item,
