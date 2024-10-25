@@ -331,6 +331,7 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
             value={selectedProvince?.name}
             variant={variant}
             onChange={handleProvinceChange}
+            isRequired
           >
             {(province: Province) => (
               <AutocompleteItem key={province?.id} value={province?.id}>
@@ -344,12 +345,14 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
               base: selectedDistrict ? "text-black-500" : "",
             }}
             items={districts}
+            labelPlacement="outside"
             label="Huyện/Quận"
             listboxProps={{
               emptyContent: "Không tìm thấy Quận/huyện nào.",
             }}
             placeholder="Chọn Huyện/Quận"
             value={selectedDistrict?.name}
+            isRequired
             variant={variant}
             onChange={handleDistrictChange}
           >
@@ -373,7 +376,9 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
             }}
             placeholder="Chọn Xã"
             value={selectedWard?.name}
+            isRequired
             variant={variant}
+            labelPlacement="outside"
             onChange={handleWardChange}
           >
             {(ward: Province) => (
