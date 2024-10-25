@@ -162,7 +162,7 @@ export default function CheckoutModule() {
         voucherCode: voucher,
       },
       paymentMethod: paymentMethod,
-      returnUrl: `${hostname}/detail-order`,
+      returnUrl: `${hostname}`,
     };
     const promise = () =>
       new Promise<void>(async (resolve, reject) => {
