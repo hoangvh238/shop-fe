@@ -52,8 +52,6 @@ function HeaderShopLayout({ user }: any) {
     refetchOnMountOrArgChange: true,
   });
 
-  console.log("cartItems", cartItems);
-
   return (
     <header className="sticky top-0 z-50 w-full bg-white shadow-lg transition-all duration-500 lg:px-24">
       <div className="container mx-auto flex items-center justify-between px-4 py-4">
@@ -165,7 +163,7 @@ function HeaderShopLayout({ user }: any) {
                       role === "Quản lí" ? "text-red-500" : "text-blue-500",
                   }}
                   description={role}
-                  name={user?.email[0] ?? "Ẩn danh"}
+                  name={user?.email?.[0] ?? "Ẩn danh"}
                 />
                 <span className="h-px w-full bg-gray-400" />
                 <Link

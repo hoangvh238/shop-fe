@@ -278,8 +278,8 @@ const CellContent = ({
                 >
                   {
                     enums.TransactionStastusTranslate[
-                    user?.transaction
-                      ?.status as keyof typeof enums.TransactionStastusTranslate
+                      user?.transaction
+                        ?.status as keyof typeof enums.TransactionStastusTranslate
                     ]
                   }
                 </Chip>
@@ -291,7 +291,7 @@ const CellContent = ({
                     <Chip className="capitalize" color={selectedValueStatus()}>
                       {
                         enums.TransactionStastusTranslate[
-                        selectedValue as keyof typeof enums.TransactionStastusTranslate
+                          selectedValue as keyof typeof enums.TransactionStastusTranslate
                         ]
                       }
                     </Chip>
