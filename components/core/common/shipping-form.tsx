@@ -230,31 +230,28 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
     }, [selectedWard]);
 
     // Xử lý khi chọn tỉnh/thành phố
-    const handleProvinceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleProvinceChange = (e: any) => {
       const newSelected =
-        provinces.find((province) => province?.id === e.target.value) ??
-        initialAddress;
+        provinces.find((province) => province?.id === e) ?? initialAddress;
 
       handleForm(newSelected?.name, "city");
       setSelectedProvince(newSelected);
     };
 
+
     // Xử lý khi chọn huyện/quận
-    const handleDistrictChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleDistrictChange = (e: any) => {
       const newSelected =
-        districts.find((district) => district?.id === e.target.value) ??
-        initialAddress;
+        districts.find((district) => district?.id === e) ?? initialAddress;
 
       handleForm(newSelected?.name, "district");
       setSelectedDistrict(newSelected);
     };
 
     // Xử lý khi chọn xã/phường
-    const handleWardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newSelected =
-        wards.find((ward) => ward?.id == e.target.value) ?? initialAddress;
+    const handleWardChange = (e: any) => {
+      const newSelected = wards.find((ward) => ward?.id == e) ?? initialAddress;
 
-      console.log("first", e.target.value, wards);
       handleForm(newSelected?.name, "street");
       setSelectedWard(newSelected);
     };
@@ -318,20 +315,21 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
         </div>
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
           <Autocomplete
+            isRequired
             className="max-w-xs"
             classNames={{
               base: selectedProvince ? "text-black-500" : "",
             }}
             defaultItems={provinces}
             label="Tỉnh/Thành phố"
+            labelPlacement="outside"
             listboxProps={{
               emptyContent: "Không tìm thấy Tỉnh/Thành phố nào.",
             }}
             placeholder="Chọn Tỉnh/Thành phố"
             value={selectedProvince?.name}
             variant={variant}
-            onChange={handleProvinceChange}
-            isRequired
+            onSelectionChange={handleProvinceChange}
           >
             {(province: Province) => (
               <AutocompleteItem key={province?.id} value={province?.id}>
@@ -340,21 +338,21 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
             )}
           </Autocomplete>
           <Autocomplete
+            isRequired
             className="max-w-xs"
             classNames={{
               base: selectedDistrict ? "text-black-500" : "",
             }}
             items={districts}
-            labelPlacement="outside"
             label="Huyện/Quận"
+            labelPlacement="outside"
             listboxProps={{
               emptyContent: "Không tìm thấy Quận/huyện nào.",
             }}
             placeholder="Chọn Huyện/Quận"
             value={selectedDistrict?.name}
-            isRequired
             variant={variant}
-            onChange={handleDistrictChange}
+            onSelectionChange={handleDistrictChange}
           >
             {(district: Province) => (
               <AutocompleteItem key={district?.id} value={district?.id}>
@@ -365,21 +363,21 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
         </div>
         <div className="flex flex-wrap items-center gap-4 sm:flex-nowrap">
           <Autocomplete
+            isRequired
             className="max-w-xs"
             classNames={{
               base: selectedWard ? "text-black-500" : "",
             }}
             items={wards}
             label="Xã"
+            labelPlacement="outside"
             listboxProps={{
               emptyContent: "Không tìm thấy phường/xã nào.",
             }}
             placeholder="Chọn Xã"
             value={selectedWard?.name}
-            isRequired
             variant={variant}
-            labelPlacement="outside"
-            onChange={handleWardChange}
+            onSelectionChange={handleWardChange}
           >
             {(ward: Province) => (
               <AutocompleteItem key={ward?.id} value={ward?.id}>

@@ -115,6 +115,23 @@ export const authAPI = baseApi.injectEndpoints({
         flashError: true,
       }),
     }),
+    searchProduct: build.mutation<any, { query: string }>({
+      query: (data: { query: string }) => ({
+        url: endpointProduct.SEARCH_PRODUCT,
+        method: "Post",
+        flashError: true,
+        data: {
+          query: {
+            match: {
+              name: {
+                query: data?.query,
+                fuzziness: "AUTO",
+              },
+            },
+          },
+        },
+      }),
+    }),
     deleteProduct: build.mutation<any, { id?: string }>({
       query: (params: { id: string }) => ({
         url: endpointProduct.DELETE_PRODUCT.replace("{id}", params?.id),
@@ -188,4 +205,5 @@ export const {
   useDeleteSubProductMutation,
   useFillterProductMutation,
   useSeftEditMutation,
+  useSearchProductMutation,
 } = authAPI;

@@ -28,7 +28,9 @@ export function Providers({ children, themeProps }: ProvidersProps) {
             height="4px"
             options={{ showSpinner: false }}
           />
-          <Provider store={store}>{children}</Provider>
+          <Provider store={store}>
+           {children}
+          </Provider>
         </React.Suspense>
       </NextThemesProvider>
     </NextUIProvider>

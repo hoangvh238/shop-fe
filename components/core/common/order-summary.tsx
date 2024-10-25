@@ -15,6 +15,7 @@ export type OrderSummaryProps = React.HTMLAttributes<HTMLDivElement> & {
   setVoucher: (voucher: string) => void;
   voucher: string;
   isSuccess: boolean;
+  isError: boolean;
 };
 
 export type OrderItemType = {
@@ -33,6 +34,7 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
       totalPrice,
       inputItem,
       isSuccess,
+      isError,
       voucher,
       submitOrder,
       ...props
@@ -51,7 +53,8 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
     }, [selectList]);
 
     React.useEffect(() => {
-      if (itemProduct && itemSize && isSuccess) {
+      console.log('items2', items)
+      if (itemProduct && itemSize && (isSuccess || isError)) {
         const item = items.find(
           (e) => e.customCanvas.id === itemProduct && e.size === itemSize,
         );
@@ -64,9 +67,9 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
 
         setSelectList([selected]);
       }
-    }, [items]);
+    }, [items.length]);
 
-    console.log('selectList', selectList)
+    console.log("selectList", selectList);
 
     const products = React.useMemo(() => {
       return items?.map((item) => ({
@@ -79,7 +82,7 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
               selectedItem.size === item.size,
           ),
       }));
-    }, [items]);
+    }, [items.length]);
 
     return (
       <div ref={ref} {...props}>

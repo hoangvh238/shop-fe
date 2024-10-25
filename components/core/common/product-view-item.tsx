@@ -2,10 +2,10 @@
 
 import React from "react";
 import {
-  Modal, 
-  ModalContent, 
-  ModalHeader, 
-  ModalBody, 
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
   useDisclosure,
   Button,
   Input,
@@ -13,7 +13,7 @@ import {
   RadioGroup,
   ScrollShadow,
 } from "@nextui-org/react";
-import {} from "@nextui-org/react";
+import { } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
@@ -32,6 +32,7 @@ import { useSeftEditMutation } from "@/store/queries/productManagement";
 import useNewTabRedirect from "@/hooks/useNewTabRedirect";
 import webStorageClient from "@/utils/webStorageClient";
 import { usePathname } from "next/navigation";
+import { CameraKit } from "@/components/modules/CameraKit/CameraKitContext";
 
 export type ProductViewItemColor = {
   name: string;
@@ -93,7 +94,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
     const [seftEdit] = useSeftEditMutation();
     const [redirectNewTab] = useNewTabRedirect();
     const pathname = usePathname();
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const [addCart, { isLoading }] = useAddCardMutation();
 
@@ -270,7 +271,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
 
         {/* Product Info */}
         <div className="flex flex-col">
-        <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between">
             <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
             <Modal size="4xl" isOpen={isOpen} onOpenChange={onOpenChange}>
               <ModalContent className="rounded-xl" >
@@ -278,7 +279,7 @@ const ProductViewInfo = React.forwardRef<HTMLDivElement, ProductViewInfoProps>(
                   <>
                     <ModalHeader className="flex flex-col gap-1">Thử áo quần với công nghệ AR</ModalHeader>
                     <ModalBody>
-                      {isOpen && <CameraKitApp />}
+                      {isOpen && <CameraKit><CameraKitApp /></CameraKit>}
                     </ModalBody>
                   </>
                 )}

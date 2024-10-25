@@ -19,6 +19,7 @@ import webStorageClient from "@/utils/webStorageClient";
 import { useGetCartQuery } from "@/store/queries/cartManagement";
 import webLocalStorage from "@/utils/webLocalStorage";
 function HeaderShopLayout({ user }: any) {
+  const [search, setSearch] = React.useState("");
   const router = useRouter();
 
   const handleLogout = () => {
@@ -52,7 +53,12 @@ function HeaderShopLayout({ user }: any) {
     refetchOnMountOrArgChange: true,
   });
 
-  console.log("cartItems", cartItems);
+  const handleSearch = (e: any) => {
+    setSearch(e.target.value);
+  };
+  const handleKeyDown = (e: any) => {
+    if (e.key === "Enter") router.push(`/search/?keyword=${search}`);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white shadow-lg transition-all duration-500 lg:px-24">
@@ -80,11 +86,9 @@ function HeaderShopLayout({ user }: any) {
             className="w-max"
             placeholder="Tìm kiếm sản phẩm"
             startContent={<Search className="h-5 w-5" />}
-            onSubmit={() => {
-              console.log("1", 1);
-            }}
+            onChange={handleSearch}
+            onKeyDown={handleKeyDown}
           />
-
           <Tooltip
             closeDelay={500}
             content={

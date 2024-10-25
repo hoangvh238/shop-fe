@@ -52,6 +52,7 @@ const endpointProduct = {
   DELETE_SUBPRODUCT: `${prefixUser}/TemplateCanvas/delete/{id}`,
   FILLTER_PRODUCT: `${prefixUser}/TemplateCanvas/get-all-fillter`,
   SEFT_EDIT: `${prefixUser}/CustomCanvas/selft-edit/{id}`,
+  SEARCH_PRODUCT: `${process.env.NEXT_PUBLIC_SEARCH_PRODUCT}/style-up/_search`,
 };
 
 const endpointProvider = {

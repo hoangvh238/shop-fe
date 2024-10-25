@@ -93,25 +93,28 @@ export default function CheckoutModule() {
     );
   }, [ordering.inputItem, ordering.inputOrder.shippingPrice]);
 
-  const { cartItems, isSuccess } = useGetCartQuery(null, {
+  const { cartItems, isSuccess, isError } = useGetCartQuery(null, {
     selectFromResult: ({ data, isSuccess, error }) => {
       if (error) {
         const newData = webLocalStorage.get("cart");
+
         return {
           cartItems: newData ?? [],
           isSuccess,
+          isError: true,
         };
       }
 
       return {
         cartItems: data?.result?.items ?? [],
         isSuccess,
+        isError: false,
       };
     },
     refetchOnMountOrArgChange: true,
   });
 
-  console.log("first", cartItems);
+  console.log('cartItems', cartItems)
 
   const variants = {
     enter: (direction: number) => ({
@@ -237,6 +240,7 @@ export default function CheckoutModule() {
           <OrderSummary
             hideTitle
             inputItem={ordering.inputItem}
+            isError={isError}
             isSuccess={isSuccess}
             items={cartItems}
             setVoucher={setVoucher}
@@ -322,7 +326,7 @@ export default function CheckoutModule() {
       default:
         return null;
     }
-  }, [page, cartItems, ordering.inputItem]);
+  }, [page, cartItems.length, ordering.inputItem]);
 
   return (
     <section className="container mx-auto flex items-start gap-8 px-4 py-20">
