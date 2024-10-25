@@ -31,7 +31,6 @@ export default function TopSearch() {
     },
   );
 
-  console.log("detailOrder", detailOrder);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

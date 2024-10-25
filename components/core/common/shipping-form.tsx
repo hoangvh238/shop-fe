@@ -96,7 +96,6 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
 
           setProvinces(response.data?.data); // Giả định API trả về danh sách tỉnh
         } catch (error) {
-          console.log("newtoken", newtoken);
         }
       };
       const loginGoship = async () => {
@@ -126,7 +125,6 @@ const ShippingForm = React.forwardRef<HTMLDivElement, ShippingFormProps>(
             }
           }
         } catch (err) {
-          console.log("err", err);
         }
       };
 

@@ -6,7 +6,6 @@ import Link from "./Link";
 
 import ProductViewInfo from "@/components/core/common/product-view-item";
 function ProductDetailModule({ product }: { product: any }) {
-  console.log("product", product);
 
   return (
     <>

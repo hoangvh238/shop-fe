@@ -169,7 +169,7 @@ function HeaderShopLayout({ user }: any) {
                       role === "Quản lí" ? "text-red-500" : "text-blue-500",
                   }}
                   description={role}
-                  name={user?.email[0] ?? "Ẩn danh"}
+                  name={user?.email?.[0] ?? "Ẩn danh"}
                 />
                 <span className="h-px w-full bg-gray-400" />
                 <Link

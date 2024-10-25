@@ -88,6 +88,8 @@ const AdminCreateSubProduct = ({ idProduct }: { idProduct: string }) => {
       },
     },
   );
+
+  console.log("baseColors", baseColors);
   const { baseSizes } = useGetSizesQuery(
     { id: "a7316c60-5024-4b3f-842d-67ebe51d05c6" },
     {
@@ -100,7 +102,9 @@ const AdminCreateSubProduct = ({ idProduct }: { idProduct: string }) => {
   );
 
   const handleInputPrice = (event: any) => {
-    let number = Number(event.target.value.replaceAll(".", ""));
+    let number = Number(
+      event.target.value.replaceAll(".", "").replaceAll(",", ""),
+    );
 
     if (isNaN(number) && number < 0) {
       event.preventDefault();

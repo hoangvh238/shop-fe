@@ -108,7 +108,9 @@ const AdminEditSubProduct = ({
   );
 
   const handleInputPrice = (event: any) => {
-    let number = Number(event.target.value.replaceAll(".", ""));
+    let number = Number(
+      event.target.value.replaceAll(".", "").replaceAll(",", ""),
+    );
 
     if (isNaN(number) && number < 0) {
       event.preventDefault();

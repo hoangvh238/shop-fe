@@ -53,7 +53,6 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
     }, [selectList]);
 
     React.useEffect(() => {
-      console.log('items2', items)
       if (itemProduct && itemSize && (isSuccess || isError)) {
         const item = items.find(
           (e) => e.customCanvas.id === itemProduct && e.size === itemSize,
@@ -69,7 +68,6 @@ const OrderSummary = React.forwardRef<HTMLDivElement, OrderSummaryProps>(
       }
     }, [items.length]);
 
-    console.log("selectList", selectList);
 
     const products = React.useMemo(() => {
       return items?.map((item) => ({

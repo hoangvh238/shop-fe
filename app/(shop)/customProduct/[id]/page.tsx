@@ -43,7 +43,6 @@ export default async function ProductDetailPage({
     ],
   };
 
-  console.log("product", product);
 
   return <ProductDetailModule product={product} />;
 }

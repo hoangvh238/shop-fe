@@ -114,7 +114,6 @@ export default function CheckoutModule() {
     refetchOnMountOrArgChange: true,
   });
 
-  console.log('cartItems', cartItems)
 
   const variants = {
     enter: (direction: number) => ({
