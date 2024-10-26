@@ -24,13 +24,11 @@ export function Providers({ children, themeProps }: ProvidersProps) {
         <React.Suspense>
           <AppProgressBar
             shallowRouting
-            color="#f27023"
+            color="#6baae2"
             height="4px"
             options={{ showSpinner: false }}
           />
-          <Provider store={store}>
-           {children}
-          </Provider>
+          <Provider store={store}>{children}</Provider>
         </React.Suspense>
       </NextThemesProvider>
     </NextUIProvider>
