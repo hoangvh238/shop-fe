@@ -134,7 +134,7 @@ const ProductListItem = React.forwardRef<HTMLDivElement, ProductListItemProps>(
                     {colors?.map((color) => (
                       <li
                         key={color?.name}
-                        className="h-4 w-4 rounded-full border border-default-300 border-opacity-10"
+                        className="h-4 w-4 rounded-full border-1 border-black"
                         style={{ backgroundColor: color?.hex }}
                       >
                         <span className="sr-only">{color?.name}</span>

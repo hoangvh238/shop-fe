@@ -17,7 +17,6 @@ export default function TopSearch() {
 
   const params = useSearchParams();
   const code = params.get("vnp_TxnRef") ?? "";
-
   const { detailOrder, isFetching, isUninitialized } = useGetOrderDetailQuery(
     { code },
     {

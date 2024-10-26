@@ -7,7 +7,6 @@ import {
   Badge,
   Button,
   Image,
-  Link,
   Progress,
   RadioGroup,
 } from "@nextui-org/react";
@@ -24,7 +23,6 @@ import OrderSummary, {
   OrderItemType,
 } from "@/components/core/common/order-summary";
 import PaymentMethodRadio from "@/components/core/common/payment-method-radio";
-import { cn } from "@/utils/cn";
 import { useAddOrderMutation } from "@/store/queries/ordermanagement";
 import { useGetCartQuery } from "@/store/queries/cartManagement";
 import { enums } from "@/settings";
@@ -147,6 +145,7 @@ export default function CheckoutModule() {
     setOrdering({ ...ordering, inputOrder: item });
   };
 
+  console.log('cartItems', cartItems)
   const submitOrder = () => {
     const req = {
       order: {
@@ -162,7 +161,7 @@ export default function CheckoutModule() {
         voucherCode: voucher,
       },
       paymentMethod: paymentMethod,
-      returnUrl: `${hostname}/detail-order`,
+      returnUrl: `${hostname}`,
     };
     const promise = () =>
       new Promise<void>(async (resolve, reject) => {
@@ -438,44 +437,29 @@ export default function CheckoutModule() {
           <h2 className="text-2xl font-medium text-white/70 [text-shadow:_0_2px_10px_rgb(0_0_0_/_20%)]">
             Mẫu áo bán chạy nhất của StyleUp
           </h2>
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Icon
-                  key={i}
-                  className={cn(i < 5 ? "text-yellow-400" : "text-white/80")}
-                  icon="solar:star-bold"
-                  width={16}
-                />
-              ))}
-            </div>
-            <Link
-              className="text-white/60"
-              href="#"
-              size="sm"
-              underline="always"
-            >
-              120 đánh giá
-            </Link>
-          </div>
         </div>
         <Image
           removeWrapper
           alt="Nike Adapt BB 2.0"
           className="absolute inset-0 z-0 h-full w-full rounded-none object-cover"
           height="100%"
-          src="https://media-fmplus.cdn.vccloud.vn/uploads/products/2405ASUK0020601/ec52b393-7912-466b-ac44-2805e7f19693.jpg"
+          src={cartItems?.[0]?.customCanvas?.images[0]}
         />
         <div className="absolute inset-x-4 bottom-4 z-10 flex items-center justify-between rounded-medium bg-background/10 p-8 backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50">
           <div className="flex flex-col gap-1">
             <h2 className="left-10 z-10 text-2xl font-medium text-white/90">
-              Áo thun...
+              {cartItems?.[0]?.customCanvas?.name}
             </h2>
-            <p className="left-10 z-10 text-white/80">200.000 VNĐ</p>
+            <p className="left-10 z-10 text-white/80">
+              {cartItems?.[0]?.customCanvas?.price?.toLocaleString()}0 VNĐ
+            </p>
           </div>
           <Button
             className="border-white/40 pl-3 text-white"
             variant="bordered"
+            onClick={() => {
+              router.push(`/customProduct/${cartItems?.[0]?.customCanvas?.id}`);
+            }}
           >
             Xem sản phẩm
           </Button>
